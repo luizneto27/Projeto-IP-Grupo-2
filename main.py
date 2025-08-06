@@ -1,10 +1,11 @@
 # importar as bibliotecas
 import pygame, random
+#from soldados import Soldado
 
 pygame.init() # inicializar o pygame
 clock = pygame.time.Clock() # coloca o jogo pra rodar numa velocidade constante
 
-tela = pygame.display.set_mode((1024, 600)) # dimensao da tela
+tela = pygame.display.set_mode((1240, 768)) # dimensao da tela
 cor_tela = (50, 50, 50)
 
 tela.fill(cor_tela)
@@ -19,8 +20,10 @@ while running: # enquanto running verdeade o jogo roda
     
     pygame.display.update()
 
-    humanos = [[], [], []]
-    monstros = []
-    coletaveis = []
+    grid = [
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0]
+    ] # grid jogo
 
     mouse_pos = pygame.mouse.get_pos()
