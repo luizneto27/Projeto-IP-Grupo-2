@@ -13,5 +13,5 @@ class Soldado:
         self.dano_causado = 20
 
     # desenhar o personagem na tela
-    def mostrar_na_tela(self, display, posicao_tela):
-        display.blit((20, 80), posicao_tela)
+    def mostrar_na_tela(tela):
+        pygame.draw.rect(tela, (255, 0, 0), (200, 300, 40, 50)) # recebe a tela, cor, local na tela, e dimensoes
