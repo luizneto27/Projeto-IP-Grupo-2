@@ -1,5 +1,5 @@
 # importar as bibliotecas
-import pygame, random
+import pygame
 from scripts.game import Game
 
 pygame.init() # inicializar o pygame
@@ -27,7 +27,4 @@ while running: # enquanto running verdade o jogo roda
     
     pygame.display.flip()
 
-pygame.quit()  
-   
-
-    
+pygame.quit()

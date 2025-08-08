@@ -6,8 +6,8 @@ class Boss(pygame.sprite.Sprite): # NOVO: Herda de pygame.sprite.Sprite
     def __init__(self, vida_total, pos_x, pos_y, dano):
         super().__init__() # NOVO: Inicializador do Sprite
 
-        self.image = pygame.image.load(r'Imagens/monster_slither_attack_slow.gif').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (250, 400))
+        self.image = pygame.image.load(r'Imagens/baron_1.webp').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (400, 400))
         self.rect = self.image.get_rect(center=(pos_x, pos_y))
 
         self.vida_total = vida_total

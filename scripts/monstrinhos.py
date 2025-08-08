@@ -6,7 +6,7 @@ class Monstrinho(pygame.sprite.Sprite):
     def __init__(self, vida_total, pos_x, pos_y, dano, velocidade):
         super().__init__()
         
-        self.image = pygame.image.load('Imagens/monster_slither_attack_slow.gif').convert_alpha()
+        self.image = pygame.image.load(r'Imagens/monstrinho_v2.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (80, 80))
         # Garante o alinhamento vertical perfeito na fileira
         self.rect = self.image.get_rect(center=(pos_x, pos_y))

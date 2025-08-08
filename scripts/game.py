@@ -26,7 +26,7 @@ class Game:
         self.largura_casa = 120
         self.x_inicial_grade = 50
 
-        self.imagem_fundo = pygame.image.load('Imagens/ideiainicialtela.png').convert()
+        self.imagem_fundo = pygame.image.load(r'Imagens/ideiainicialtela.png').convert()
         self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (self.largura_tela, self.altura_tela))
         
         boss_pos_x = self.largura_tela - 150
@@ -205,5 +205,5 @@ class Game:
             tela.blit(texto_derrota, (pos_x, pos_y))
         
         # para ver as caixas de colisão
-        for sprite in self.todos_sprites:
-            pygame.draw.rect(tela, (255, 0, 0), sprite.rect, 2) # Desenha um retângulo vermelho em volta de cada sprite
+        #for sprite in self.todos_sprites:
+            #pygame.draw.rect(tela, (255, 0, 0), sprite.rect, 2) # Desenha um retângulo vermelho em volta de cada sprite
