@@ -26,7 +26,7 @@ class Game:
         self.largura_casa = 120
         self.x_inicial_grade = 50
 
-        self.imagem_fundo = pygame.image.load(r'Imagens/ideiainicialtela.png').convert()
+        self.imagem_fundo = pygame.image.load(r'Imagens/fundodojogo.webp').convert()
         self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (self.largura_tela, self.altura_tela))
         
         boss_pos_x = self.largura_tela - 150
@@ -102,7 +102,6 @@ class Game:
         self.todos_sprites.add(novo_soldado)
 
     # ESTA FUNÇÃO GARANTE QUE OS MONSTROS APAREÇAM NAS FILEIRAS
-    # ALTERADO: Monstrinhos agora saem do Boss
     def spawn_enemy(self):
         # 1. Sorteia a fileira de onde o monstro vai sair
         linha_idx = random.randint(0, 2)

@@ -16,7 +16,7 @@ class Monstrinho(pygame.sprite.Sprite):
         self.dano = dano
         self.velocidade = velocidade
         
-        # NOVO: Define um alcance mínimo para o ataque corpo a corpo
+        # Define um alcance mínimo para o ataque corpo a corpo
         self.alcance = 5 
         
         self.alvo_em_combate = None

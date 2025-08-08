@@ -1,7 +1,7 @@
 import pygame
 
 class Carta:
-    # ALTERADO: Adicionado 'cost_type' para diferenciar custo de tempo e de sangue
+    # 'cost_type' para diferenciar custo de tempo e de sangue
     def __init__(self, imagem_path, pos_x, pos_y, tipo_soldado, custo=100, cost_type='blood', imagem_soldado_path = ''):
         self.image = pygame.image.load(imagem_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (80, 80))
@@ -15,7 +15,6 @@ class Carta:
         self.cooldown_max = custo if cost_type == 'time' else 10 # Cooldown pequeno para cartas de sangue
         self.cooldown_atual = 0
 
-    # ALTERADO: O método draw agora recebe o sangue atual para escurecer a carta se necessário
     def draw(self, tela, recurso_sangue_atual=0):
         escurecer = False
         if self.cost_type == 'time' and self.cooldown_atual > 0:
@@ -34,7 +33,7 @@ class Carta:
         if self.cooldown_atual > 0:
             self.cooldown_atual -= 1
 
-    # ALTERADO: Verifica o tipo de custo para ver se a carta pode ser usada
+    # Verifica o tipo de custo para ver se a carta pode ser usada
     def pode_usar(self, recurso_sangue_atual=0):
         if self.cooldown_atual > 0:
             return False
