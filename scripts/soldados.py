@@ -6,6 +6,7 @@ class Soldado(pygame.sprite.Sprite):
         
         self.imagens_nivel = {
             1: pygame.transform.scale(pygame.image.load(r'Imagens/soldado_comum_parado.png').convert_alpha(), (100, 100)),
+            2: pygame.transform.scale(pygame.image.load(r'Imagens/soldado_upgrade_parado.png').convert_alpha(), (100, 100))
         }
         
         self.nivel_arma = 1

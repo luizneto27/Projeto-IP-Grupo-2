@@ -35,10 +35,10 @@ class Game:
         self.todos_sprites.add(self.boss)
         
         self.cartas = []
-        caminho_img_soldado_comum = 'Imagens/imagem-soldado-comum.gif'
+        caminho_img_soldado_comum = 'Imagens/soldado_comum_parado.png'
         self.cartas.append(Carta(caminho_img_soldado_comum, 50, self.altura_tela - 90, 'comum', custo=300, cost_type='time', imagem_soldado_path=caminho_img_soldado_comum))
         
-        caminho_img_soldado_buff = 'Imagens/imagem-soldado-comum.gif'
+        caminho_img_soldado_buff = 'Imagens/soldado_upgrade_parado.png'
         self.cartas.append(Carta(caminho_img_soldado_buff, 150, self.altura_tela - 90, 'buffado', custo=100, cost_type='blood', imagem_soldado_path=caminho_img_soldado_buff))
 
         self.spawn_inimigo_timer_max = 180 
