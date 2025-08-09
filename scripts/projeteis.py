@@ -29,6 +29,7 @@ class Projetil(pygame.sprite.Sprite):
             self.kill()
             return
 
+        # o erro com o tiro no onibus vem daqui ->
         # Colisão com obstáculos
         for obstacle in pygame.sprite.spritecollide(self, self.obstacles_group, False):
             if obstacle.take_damage(BULLET_DAMAGE):
@@ -38,3 +39,4 @@ class Projetil(pygame.sprite.Sprite):
                     self.obstacles_group.add(item)  # será adicionado no Game
             self.kill()
             return
+        

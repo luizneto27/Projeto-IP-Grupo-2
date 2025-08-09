@@ -19,7 +19,6 @@ class Obstacle(pygame.sprite.Sprite):
         return False
     
     def drop_item(self):
-        """Retorna o coletável correspondente se houver."""
         if self.collectible_type == 'kitmedico':
             return KitMedico(self.rect.centerx, self.rect.centery)
         elif self.collectible_type == 'municao':

@@ -3,7 +3,7 @@ import pygame
 import random
 from scripts.player import Player
 from scripts.zombie import Zombie
-from scripts.obstaculos import Flor, Container
+from scripts.obstaculos import Flor, Container, Obstacle
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
 from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL
@@ -46,7 +46,7 @@ class Game:
 
     def spawn_initial_elements(self):
         # Posiciona os elementos no mundo de jogo
-        for _ in range(5):
+        for i in range(5):
             self.spawn_zombie()
 
         flor = Flor(300, 200)
@@ -74,8 +74,6 @@ class Game:
                     self.projectiles.add(projectile)
                     self.all_sprites.add(projectile)
        
-
-    # --- LÓGICA DE COLISÃO DO PROJÉTIL ---
     def handle_collecting_items(self):
         collected_items = pygame.sprite.spritecollide(self.player, self.collectibles, True)
         for item in collected_items:
@@ -98,7 +96,7 @@ class Game:
         self.projectiles.update()
 
         #ATUALIZAR A CÂMERA
-        # A câmera segue o jogador, mantendo-o no centro da tela
+        # A câmera segue o jogador, mantendo ele no centro da tela
         self.camera.center = self.player.rect.center
           # Garante que a câmera não saia dos limites do mundo
         if self.camera.left < 0:
@@ -136,7 +134,7 @@ class Game:
         # Função auxiliar para desenhar cada item da UI
         def draw_ui_item(icon, text, x, y):
             screen.blit(icon, (x, y))
-            text_surface = self.font.render(str(text), True, (255, 255, 255))
+            text_surface = self.font.render(str(text), True, (255, 0, 0))
             text_rect = text_surface.get_rect(center=(x + 20, y + 60))
             screen.blit(text_surface, text_rect)
         
