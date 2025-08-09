@@ -1,30 +1,44 @@
-# importar as bibliotecas
+# main.py
 import pygame
 from scripts.game import Game
 
-pygame.init() # inicializar o pygame
-pygame.font.init() #inicializa o módulo de fontes
+# Inicializar o pygame e o módulo de fontes
+pygame.init()
 
-clock = pygame.time.Clock() # coloca o jogo pra rodar numa velocidade constante
 
-x, y = 1240, 768
-tela = pygame.display.set_mode((x, y)) # dimensao da tela
-pygame.display.set_caption('Humans Vs Monsters')
+# Definir as dimensões da tela
+LARGURA_TELA = 1240
+ALTURA_TELA = 768
 
-game = Game(x, y)
+# configura a tela e o titulo da janela
+tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+pygame.display.set_caption('Bem vindo ao jogo!')
 
+# controla o fps
+clock = pygame.time.Clock()
+
+# instância da classe principal do jogo
+game = Game(LARGURA_TELA, ALTURA_TELA)
+
+#loop principal do jogo
 running = True
-while running: # enquanto running verdade o jogo roda
-    clock.tick(60) # fps do jogo
+while running:
+    # 60 FPS
+    clock.tick(60)
 
+    # eventos
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False  
-        game.handle_event(event)
+            running = False     
 
+    # lógica do jogo
     game.update()
+
+    # desenha todos os elementos na tela
     game.draw(tela)
-    
+
+    # atualizar a tela para exibir o que foi desenhado
     pygame.display.flip()
 
+# finalizar o pygame ao sair do loop
 pygame.quit()
