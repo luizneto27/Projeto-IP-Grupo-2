@@ -30,8 +30,29 @@ class Flor(Obstacle):
         super().__init__(x, y, 'Imagens/baron_1.webp', FLOR_HEALTH, 'kitmedico')
         self.image = pygame.transform.scale(self.image, (60, 60))
 
+        # Guarda a posição central original
+        old_center = self.rect.center
+        
+        # Redimensiona o retângulo de colisão (ex: para 40x40)
+        # Ajuste os valores para o tamanho que achar melhor
+        self.rect = pygame.Rect(0, 0, 60, 60) 
+        
+        # Restaura a posição central
+        self.rect.center = old_center
+
 
 class Container(Obstacle):
     def __init__(self, x, y):
         super().__init__(x, y, 'Imagens/onibus.png', CONTAINER_HEALTH, 'municao')
         self.image = pygame.transform.scale(self.image, (150, 80))
+        
+        # --- CORREÇÃO AQUI ---
+        # Guarda a posição central original
+        old_center = self.rect.center
+        
+        # Redimensiona o retângulo de colisão para ser menor que a imagem
+        # Os valores (130, 60) são exemplos, você pode ajustá-los
+        self.rect = pygame.Rect(0, 0, 150, 80) 
+        
+        # Restaura a posição central do novo retângulo
+        self.rect.center = old_center

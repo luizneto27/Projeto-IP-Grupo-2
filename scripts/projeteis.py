@@ -23,10 +23,13 @@ class Projetil(pygame.sprite.Sprite):
         if self.rect.left > 2500 or self.rect.right < 0:
             self.kill()
 
-        # Colisão com inimigos
-        for enemy in pygame.sprite.spritecollide(self, self.enemies_group, False):
-            enemy.take_damage(BULLET_DAMAGE)
-            self.kill()
+         # Colisão com inimigos
+        # Usamos spritecollide com True para matar o projétil e False para não matar o inimigo
+        collided_enemies = pygame.sprite.spritecollide(self, self.enemies_group, False)
+        if collided_enemies:
+            for enemy in collided_enemies:
+                enemy.take_damage(BULLET_DAMAGE)
+            self.kill() # Destrói o projétil
             return
 
         # o erro com o tiro no onibus vem daqui ->
@@ -35,8 +38,9 @@ class Projetil(pygame.sprite.Sprite):
             if obstacle.take_damage(BULLET_DAMAGE):
                 item = obstacle.drop_item()
                 if item:
-                    obstacle.kill()
-                    self.obstacles_group.add(item)  # será adicionado no Game
+                    # Adiciona o item ao grupo de coletáveis e a todos os sprites
+                    self.collectibles_group.add(item)
+                    self.all_sprites_group.add(item)
             self.kill()
             return
         

@@ -49,11 +49,29 @@ class Game:
         for i in range(5):
             self.spawn_zombie()
 
-        flor = Flor(300, 200)
-        container = Container(800, 400)
-        self.obstacles.add(flor, container)
-        self.all_sprites.add(flor, container)
+        # --- CÓDIGO MODIFICADO AQUI ---
 
+        # Spawna 3 flores em posições aleatórias à frente (à direita) do jogador
+        for _ in range(3):
+            # Gera uma posição X aleatória entre 200 e 1000 pixels à direita do jogador
+            pos_x = self.player.rect.centerx + random.randint(200, 1000)
+            # Gera uma posição Y aleatória na altura do mapa
+            pos_y = random.randint(100, self.height - 100)
+            flor = Flor(pos_x, pos_y)
+            self.obstacles.add(flor)
+            self.all_sprites.add(flor)
+
+        # Spawna 2 containers em posições aleatórias à frente (à direita) do jogador
+        for _ in range(2):
+            # Gera uma posição X aleatória entre 300 e 1500 pixels à direita do jogador
+            pos_x = self.player.rect.centerx + random.randint(300, 1500)
+            # Gera uma posição Y aleatória na altura do mapa
+            pos_y = random.randint(100, self.height - 100)
+            container = Container(pos_x, pos_y)
+            self.obstacles.add(container)
+            self.all_sprites.add(container)
+
+        
     def spawn_zombie(self):
         # Spawna o zumbi em uma altura aleatória, à direita do mundo visível
         pos_y = random.randint(100, self.height - 100)
@@ -125,6 +143,9 @@ class Game:
         # Desenha todos os sprites, ajustando suas posições pela câmera
         for sprite in self.all_sprites:
             screen.blit(sprite.image, sprite.rect.move(-self.camera.x, -self.camera.y))
+
+            # Desenha um retângulo vermelho ao redor de cada sprite
+            pygame.draw.rect(screen, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
         # Fundo da UI
         ui_bg = pygame.Surface((self.width, 80), pygame.SRCALPHA)
