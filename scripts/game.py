@@ -6,7 +6,7 @@ from scripts.zombie import Zombie
 from scripts.obstaculos import Flor, Container, Obstacle
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
-from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL, PLAYER_HIT_COOLDOWN
+from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL, PLAYER_HIT_COOLDOWN, QTD_ZOMBIES
 
 class Game:
     def __init__(self, width, height):
@@ -32,6 +32,8 @@ class Game:
         
         # A câmera é um retângulo que representa a área visível da tela
         self.camera = pygame.Rect(0, 0, self.width, self.height)
+
+        self.zumbis_spawnados = 0 # contador de zumbis
 
         #CARREGAR ÍCONES 
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
@@ -71,7 +73,7 @@ class Game:
             self.spawn_zombie()
 
         # Spawna 3 flores em posições aleatórias à frente (à direita) do jogador
-        for _ in range(3):
+        for j in range(3):
             # Gera uma posição X aleatória entre 200 e 1000 pixels à direita do jogador
             pos_x = self.player.rect.centerx + random.randint(200, 1000)
             # Gera uma posição Y aleatória na altura do mapa
@@ -81,7 +83,7 @@ class Game:
             self.all_sprites.add(flor)
 
         # Spawna 2 containers em posições aleatórias à frente (à direita) do jogador
-        for _ in range(2):
+        for k in range(2):
             # Gera uma posição X aleatória entre 300 e 1500 pixels à direita do jogador
             pos_x = self.player.rect.centerx + random.randint(300, 1500)
             # Gera uma posição Y aleatória na altura do mapa
@@ -90,7 +92,6 @@ class Game:
             self.obstacles.add(container)
             self.all_sprites.add(container)
 
-        
     def spawn_zombie(self):
         # Spawna o zumbi em uma altura aleatória, à direita do mundo visível
         pos_y = random.randint(100, self.height - 100)
@@ -98,6 +99,8 @@ class Game:
         zombie = Zombie(pos_x, pos_y)
         self.enemies.add(zombie)
         self.all_sprites.add(zombie)
+
+        self.zumbis_spawnados += 1
 
     def handle_shooting(self):
         #lógica de tiro
@@ -164,9 +167,26 @@ class Game:
         self.handle_enemy_drops()
         self.handle_player_damage()
 
+        # Lógica de vitória: verifica se todos os zumbis foram eliminados
+        if self.zumbis_spawnados >= QTD_ZOMBIES:
+            # Chame sua tela de vitória aqui. Por exemplo: self.show_victory_screen()
+            # Depois, você deve encerrar o jogo ou voltar ao menu
+            return 'victory'  # Retorna um estado para a classe principal
+
+        # Lógica de derrota por morte do jogador
+        if self.player.health <= 0:
+            # Chame sua tela de derrota aqui. Por exemplo: self.show_defeat_screen()
+            return 'defeat' # Retorna um estado para a classe principal
+
+        # Lógica de derrota por tempo esgotado
+        tempo_decorrido = (pygame.time.get_ticks() - self.tempo_inicial) / 1000 # tempo limite e tempo inicial errado tem q importar
+        if tempo_decorrido >= self.tempo_limite:
+            return 'defeat' # Retorna um estado para a classe principal
+
         # Respawn dinâmico
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_zombie_spawn > ZOMBIE_RESPAWN_INTERVAL:
+        # Verifica se o tempo de respawn já passou E se ainda faltam zumbis para spawnar
+        if current_time - self.last_zombie_spawn > ZOMBIE_RESPAWN_INTERVAL and self.zumbis_spawnados < QTD_ZOMBIES:
             self.spawn_zombie()
             self.last_zombie_spawn = current_time
 
@@ -188,7 +208,6 @@ class Game:
             # Desenha um retângulo vermelho ao redor de cada sprite
             pygame.draw.rect(screen, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
-
         # Fundo da UI
         ui_bg = pygame.Surface((self.width, 80), pygame.SRCALPHA)
         ui_bg.fill((0, 0, 0, 150))
@@ -201,7 +220,6 @@ class Game:
             text_rect = text_surface.get_rect(center=(x + 20, y + 60))
             screen.blit(text_surface, text_rect)
         
-        # --- SEÇÃO DA UI MODIFICADA ---
         # Desenha a barra de vida do jogador
         player_health_pct = (self.player.health / self.player.max_health) * 100
         screen.blit(self.health_icon, (20, 10))

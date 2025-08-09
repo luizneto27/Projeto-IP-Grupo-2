@@ -17,6 +17,7 @@ BULLET_LIFETIME = 2500  # pixels
 ZOMBIE_HEALTH = 50
 ZOMBIE_SPEED = 1
 ZOMBIE_DAMAGE = 10  # Dano que o zumbi causa
+QTD_ZOMBIES = 100
 
 # Obstáculos
 FLOR_HEALTH = 30
