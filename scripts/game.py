@@ -6,7 +6,7 @@ from scripts.zombie import Zombie
 from scripts.obstaculos import Flor, Container, Obstacle
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
-from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL
+from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL, PLAYER_HIT_COOLDOWN
 
 class Game:
     def __init__(self, width, height):
@@ -43,13 +43,32 @@ class Game:
         self.spawn_initial_elements()
         self.last_shot_time = 0 # Controle para cadência de tiro
         self.last_zombie_spawn = pygame.time.get_ticks()
+        # Guarda o tempo do último hit no jogador para o cooldown
+        self.last_player_hit = 0
 
+    def draw_health_bar(self, surf, x, y, pct, bar_length, bar_height):
+        if pct < 0:
+            pct = 0
+        
+        fill = (pct / 100) * bar_length
+        outline_rect = pygame.Rect(x, y, bar_length, bar_height)
+        fill_rect = pygame.Rect(x, y, fill, bar_height)
+
+        # Define a cor da barra com base na porcentagem de vida
+        if pct > 75:
+            color = (0, 255, 0)  # Verde
+        elif pct > 30:
+            color = (255, 255, 0)  # Amarelo
+        else:
+            color = (255, 0, 0)  # Vermelho
+
+        pygame.draw.rect(surf, (40, 40, 40), outline_rect)  # Fundo cinza escuro
+        pygame.draw.rect(surf, color, fill_rect)         # Barra de vida
+    
     def spawn_initial_elements(self):
         # Posiciona os elementos no mundo de jogo
         for i in range(5):
             self.spawn_zombie()
-
-        # --- CÓDIGO MODIFICADO AQUI ---
 
         # Spawna 3 flores em posições aleatórias à frente (à direita) do jogador
         for _ in range(3):
@@ -105,6 +124,20 @@ class Game:
                 self.all_sprites.add(collectible)
                 enemy.kill()
 
+    def handle_player_damage(self):
+        current_time = pygame.time.get_ticks()
+        # Verifica se o tempo de cooldown já passou
+        if current_time - self.last_player_hit > PLAYER_HIT_COOLDOWN:
+            # Verifica colisão entre o jogador e os inimigos
+            collided_enemies = pygame.sprite.spritecollide(self.player, self.enemies, False)
+            if collided_enemies:
+                # Pega o primeiro inimigo da lista de colisão
+                enemy = collided_enemies[0]
+                # Aplica o dano no jogador
+                self.player.take_damage(enemy.damage)
+                # Atualiza o tempo do último hit
+                self.last_player_hit = current_time
+
     def update(self):
         # 1. Atualiza o jogador (e outros sprites que não precisam de argumentos)
         self.player.update()
@@ -129,6 +162,7 @@ class Game:
         self.handle_shooting()
         self.handle_collecting_items()
         self.handle_enemy_drops()
+        self.handle_player_damage()
 
         # Respawn dinâmico
         current_time = pygame.time.get_ticks()
@@ -144,8 +178,16 @@ class Game:
         for sprite in self.all_sprites:
             screen.blit(sprite.image, sprite.rect.move(-self.camera.x, -self.camera.y))
 
+            # Desenha a barra de vida para Zumbis e Obstáculos
+            if isinstance(sprite, (Zombie, Obstacle)):
+                health_pct = (sprite.health / sprite.max_health) * 100
+                bar_x = sprite.rect.centerx - 25 - self.camera.x
+                bar_y = sprite.rect.top - 15 - self.camera.y
+                self.draw_health_bar(screen, bar_x, bar_y, health_pct, 50, 7) # Barra pequena (50x7)
+                
             # Desenha um retângulo vermelho ao redor de cada sprite
             pygame.draw.rect(screen, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
+
 
         # Fundo da UI
         ui_bg = pygame.Surface((self.width, 80), pygame.SRCALPHA)
@@ -159,7 +201,12 @@ class Game:
             text_rect = text_surface.get_rect(center=(x + 20, y + 60))
             screen.blit(text_surface, text_rect)
         
-        draw_ui_item(self.health_icon, f"{self.player.health}%", 20, 10)
-        draw_ui_item(self.ammo_icon, self.player.ammo, 90, 10)
-        draw_ui_item(self.coin_icon, self.player.coins, 160, 10)
-        draw_ui_item(self.medkit_icon, self.player.medkits, 230, 10)
+        # --- SEÇÃO DA UI MODIFICADA ---
+        # Desenha a barra de vida do jogador
+        player_health_pct = (self.player.health / self.player.max_health) * 100
+        screen.blit(self.health_icon, (20, 10))
+        self.draw_health_bar(screen, 70, 20, player_health_pct, 150, 25) # Barra grande (150x25)
+
+        draw_ui_item(self.ammo_icon, self.player.ammo, 230, 10)
+        draw_ui_item(self.coin_icon, self.player.coins, 290, 10)
+        draw_ui_item(self.medkit_icon, self.player.medkits, 360, 10)

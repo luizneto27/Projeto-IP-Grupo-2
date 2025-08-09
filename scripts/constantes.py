@@ -5,6 +5,8 @@ PLAYER_HEALTH = 100
 PLAYER_START_AMMO = 50
 PLAYER_START_COINS = 0
 PLAYER_START_MEDKITS = 0
+# Cooldown
+PLAYER_HIT_COOLDOWN = 1000 # 1 segundo de invencibilidade após ser atingido
 
 # Projéteis
 BULLET_SPEED = 20
@@ -14,6 +16,7 @@ BULLET_LIFETIME = 2500  # pixels
 # Zumbis
 ZOMBIE_HEALTH = 50
 ZOMBIE_SPEED = 1
+ZOMBIE_DAMAGE = 10  # Dano que o zumbi causa
 
 # Obstáculos
 FLOR_HEALTH = 30

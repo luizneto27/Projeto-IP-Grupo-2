@@ -9,6 +9,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = pygame.image.load(image_path).convert_alpha()
         self.rect = self.image.get_rect(center=(x, y))
         self.health = health
+        self.max_health = health
         self.collectible_type = collectible_type
 
     def take_damage(self, amount):

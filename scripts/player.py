@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
 
         self.health = PLAYER_HEALTH
+        self.max_health = PLAYER_HEALTH
         self.ammo = PLAYER_START_AMMO
         self.coins = PLAYER_START_COINS
         self.medkits = PLAYER_START_MEDKITS

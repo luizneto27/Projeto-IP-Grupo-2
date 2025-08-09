@@ -1,5 +1,6 @@
 # zombie.py
 import pygame
+from scripts.constantes import ZOMBIE_DAMAGE, ZOMBIE_HEALTH
 
 class Zombie(pygame.sprite.Sprite):
     # criando o zumbi à direita
@@ -8,8 +9,10 @@ class Zombie(pygame.sprite.Sprite):
         self.image = pygame.image.load('Imagens/monstrinho_v2.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (80, 80))
         self.rect = self.image.get_rect(center=(x, y))
-        self.health = 50
+        self.health = ZOMBIE_HEALTH
+        self.max_health = ZOMBIE_HEALTH
         self.speed = 1
+        self.damage = ZOMBIE_DAMAGE
 
     def update(self, player):
         # Move o zumbi em direção ao jogador
