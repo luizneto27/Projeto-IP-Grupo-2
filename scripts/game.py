@@ -219,7 +219,7 @@ class Game:
         # Desenha todos os outros sprites por cima do fundo
         # Desenha todos os sprites, ajustando suas posições pela câmera
         for sprite in self.todos_sprites:
-            tela.blit(sprite.image, sprite.rect.move(-self.camera.x, -self.camera.y))
+            tela.blit(sprite.imagem, sprite.rect.move(-self.camera.x, -self.camera.y))
 
             # Desenha a barra de vida para Zumbis e Obstáculos
             if isinstance(sprite, (Zombie, Obstacle)):
