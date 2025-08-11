@@ -13,29 +13,29 @@ tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
 pygame.display.set_caption('Bem vindo ao jogo!')
 
 class Game:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def __init__(self, largura, altura):
+        self.largura = largura
+        self.altura = altura
 
         #CÂMERA E MUNDO
         # Define o tamanho total
-        self.world_width = width * 2
-        self.world_height = height
+        self.largura_mundo = largura * 2
+        self.altura_mundo = altura
 
         #imagem de fundo
-        self.background_image = pygame.image.load('Imagens/fundodojogo.webp').convert()
-        self.background_image = pygame.transform.scale(self.background_image, (self.world_width, height))
+        self.imagem_fundo = pygame.image.load('Imagens/fundodojogo.webp').convert()
+        self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (self.largura_mundo, altura))
 
         #Grupo de Sprites
-        self.player = Player(width // 2, height // 2)
-        self.enemies = pygame.sprite.Group()
-        self.obstacles = pygame.sprite.Group()
-        self.collectibles = pygame.sprite.Group()
-        self.projectiles = pygame.sprite.Group()
-        self.all_sprites = pygame.sprite.Group(self.player)
+        self.player = Player(largura // 2, altura // 2)
+        self.inimigos = pygame.sprite.Group()
+        self.obstaculos = pygame.sprite.Group()
+        self.coletaveis = pygame.sprite.Group()
+        self.projeteis = pygame.sprite.Group()
+        self.todos_sprites = pygame.sprite.Group(self.player)
         
         # A câmera é um retângulo que representa a área visível da tela
-        self.camera = pygame.Rect(0, 0, self.width, self.height)
+        self.camera = pygame.Rect(0, 0, self.largura, self.altura)
 
         # tempo de jogo
         self.tempo_limite = 120 # seg
@@ -47,35 +47,35 @@ class Game:
 
         #CARREGAR ÍCONES 
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
-        self.health_icon = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de coração/vida
-        self.ammo_icon = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de munição
-        self.coin_icon = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de moeda
-        self.medkit_icon = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de kit médico
+        self.icone_vida = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de coração/vida
+        self.icone_municao = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de munição
+        self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de moeda
+        self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de kit médico
         
         self.spawn_initial_elements()
-        self.last_shot_time = 0 # Controle para cadência de tiro
-        self.last_zombie_spawn = pygame.time.get_ticks()
+        self.ultimo_tiro = 0 # Controle para cadência de tiro
+        self.ultimo_spawn_zombie = pygame.time.get_ticks()
         # Guarda o tempo do último hit no jogador para o cooldown
-        self.last_player_hit = 0
+        self.ultimo_hit_player = 0
 
-    def draw_health_bar(self, surf, x, y, pct, bar_length, bar_height):
-        if pct < 0:
-            pct = 0
+    def draw_health_bar(self, superficie, x, y, porcentagem, largura_barra, altura_barra):
+        if porcentagem < 0:
+            porcentagem = 0
         
-        fill = (pct / 100) * bar_length
-        outline_rect = pygame.Rect(x, y, bar_length, bar_height)
-        fill_rect = pygame.Rect(x, y, fill, bar_height)
+        fill = (porcentagem / 100) * largura_barra
+        contorno_rect = pygame.Rect(x, y, largura_barra, altura_barra)
+        fill_rect = pygame.Rect(x, y, fill, altura_barra)
 
         # Define a cor da barra com base na porcentagem de vida
-        if pct > 75:
-            color = (0, 255, 0)  # Verde
-        elif pct > 30:
-            color = (255, 255, 0)  # Amarelo
+        if porcentagem > 75:
+            cor = (0, 255, 0)  # Verde
+        elif porcentagem > 30:
+            cor = (255, 255, 0)  # Amarelo
         else:
-            color = (255, 0, 0)  # Vermelho
+            cor = (255, 0, 0)  # Vermelho
 
-        pygame.draw.rect(surf, (40, 40, 40), outline_rect)  # Fundo cinza escuro
-        pygame.draw.rect(surf, color, fill_rect)         # Barra de vida
+        pygame.draw.rect(superficie, (40, 40, 40), contorno_rect)  # Fundo cinza escuro
+        pygame.draw.rect(superficie, cor, fill_rect) # Barra de vida
     
     def spawn_initial_elements(self):
         # Posiciona os elementos no mundo de jogo
@@ -87,28 +87,28 @@ class Game:
             # Gera uma posição X aleatória entre 200 e 1000 pixels à direita do jogador
             pos_x = self.player.rect.centerx + random.randint(200, 1000)
             # Gera uma posição Y aleatória na altura do mapa
-            pos_y = random.randint(100, self.height - 100)
+            pos_y = random.randint(100, self.altura - 100)
             flor = Flor(pos_x, pos_y)
-            self.obstacles.add(flor)
-            self.all_sprites.add(flor)
+            self.obstaculos.add(flor)
+            self.todos_sprites.add(flor)
 
         # Spawna 2 containers em posições aleatórias à frente (à direita) do jogador
         for k in range(4):
             # Gera uma posição X aleatória entre 300 e 1500 pixels à direita do jogador
             pos_x = self.player.rect.centerx + random.randint(300, 1500)
             # Gera uma posição Y aleatória na altura do mapa
-            pos_y = random.randint(100, self.height - 100)
+            pos_y = random.randint(100, self.altura - 100)
             container = Container(pos_x, pos_y)
-            self.obstacles.add(container)
-            self.all_sprites.add(container)
+            self.obstaculos.add(container)
+            self.todos_sprites.add(container)
 
     def spawn_zombie(self):
         # Spawna o zumbi em uma altura aleatória, à direita do mundo visível
-        pos_y = random.randint(100, self.height - 100)
+        pos_y = random.randint(100, self.altura - 100)
         pos_x = self.camera.right + random.randint(50, 200)
         zombie = Zombie(pos_x, pos_y)
-        self.enemies.add(zombie)
-        self.all_sprites.add(zombie)
+        self.inimigos.add(zombie)
+        self.todos_sprites.add(zombie)
 
         self.zumbis_spawnados += 1 # ate atingir 100, se tiver errado corrige pra += 5
 
@@ -116,49 +116,49 @@ class Game:
         #lógica de tiro
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
-            current_time = pygame.time.get_ticks()
-            if current_time - self.last_shot_time > CADENCIA_TIRO:
-                self.last_shot_time = current_time
-                projectile = self.player.shoot(self.enemies, self.obstacles, self.collectibles, self.all_sprites)
-                if projectile:
-                    self.projectiles.add(projectile)
-                    self.all_sprites.add(projectile)
+            tempo_atual = pygame.time.get_ticks()
+            if tempo_atual - self.ultimo_tiro > CADENCIA_TIRO:
+                self.ultimo_tiro = tempo_atual
+                projetil = self.player.shoot(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites)
+                if projetil:
+                    self.projeteis.add(projetil)
+                    self.todos_sprites.add(projetil)
        
     def handle_collecting_items(self):
-        collected_items = pygame.sprite.spritecollide(self.player, self.collectibles, True)
-        for item in collected_items:
+        itens_coletados = pygame.sprite.spritecollide(self.player, self.coletaveis, True)
+        for item in itens_coletados:
             self.player.collect(item)
     
     def handle_enemy_drops(self):
-        for enemy in list(self.enemies):
-            if enemy.health <= 0:
+        for inimigo in list(self.inimigos):
+            if inimigo.vida <= 0:
                 self.zumbis_mortos += 1
-                collectible = Moeda(enemy.rect.centerx, enemy.rect.centery)
-                self.collectibles.add(collectible)
-                self.all_sprites.add(collectible)
-                enemy.kill()
+                coletavel = Moeda(inimigo.rect.centerx, inimigo.rect.centery)
+                self.coletaveis.add(coletavel)
+                self.todos_sprites.add(coletavel)
+                inimigo.kill()
 
     def handle_player_damage(self):
-        current_time = pygame.time.get_ticks()
+        tempo_atual = pygame.time.get_ticks()
         # Verifica se o tempo de cooldown já passou
-        if current_time - self.last_player_hit > COOLDOWN_DANO_JOGADOR:
+        if tempo_atual - self.ultimo_hit_player > COOLDOWN_DANO_JOGADOR:
             # Verifica colisão entre o jogador e os inimigos
-            collided_enemies = pygame.sprite.spritecollide(self.player, self.enemies, False)
-            if collided_enemies:
+            inimigos_colididos = pygame.sprite.spritecollide(self.player, self.inimigos, False)
+            if inimigos_colididos:
                 # Pega o primeiro inimigo da lista de colisão
-                enemy = collided_enemies[0]
+                inimigo = inimigos_colididos[0]
                 # Aplica o dano no jogador
-                self.player.take_damage(enemy.damage)
+                self.player.take_damage(inimigo.damage)
                 # Atualiza o tempo do último hit
-                self.last_player_hit = current_time
+                self.ultimo_hit_player = tempo_atual
 
     def update(self):
         # 1. Atualiza o jogador (e outros sprites que não precisam de argumentos)
         self.player.update()
-        self.collectibles.update() # Atualiza os coletáveis (ex: animações, movimento)
+        self.coletaveis.update() # Atualiza os coletáveis (ex: animações, movimento)
         # 2. Atualiza os inimigos, passando a posição do jogador
-        self.enemies.update(self.player)
-        self.projectiles.update()
+        self.inimigos.update(self.player)
+        self.projeteis.update()
 
         #ATUALIZAR A CÂMERA
         # A câmera segue o jogador, mantendo ele no centro da tela
@@ -166,12 +166,12 @@ class Game:
           # Garante que a câmera não saia dos limites do mundo
         if self.camera.left < 0:
             self.camera.left = 0
-        if self.camera.right > self.world_width:
-            self.camera.right = self.world_width
+        if self.camera.right > self.largura_mundo:
+            self.camera.right = self.largura_mundo
         if self.camera.top < 0:
             self.camera.top = 0
-        if self.camera.bottom > self.world_height:
-            self.camera.bottom = self.world_height
+        if self.camera.bottom > self.altura_mundo:
+            self.camera.bottom = self.altura_mundo
 
         self.handle_shooting()
         self.handle_collecting_items()
@@ -207,34 +207,34 @@ class Game:
             return
 
         # Respawn dinâmico
-        current_time = pygame.time.get_ticks()
+        tempo_atual = pygame.time.get_ticks()
         # Verifica se o tempo de respawn já passou E se ainda faltam zumbis para spawnar
-        if current_time - self.last_zombie_spawn > INTERVALO_RESPAWN_ZOMBIE and self.zumbis_spawnados < QTD_ZOMBIES:
+        if tempo_atual - self.ultimo_spawn_zombie > INTERVALO_RESPAWN_ZOMBIE and self.zumbis_spawnados < QTD_ZOMBIES:
             self.spawn_zombie()
-            self.last_zombie_spawn = current_time
+            self.ultimo_spawn_zombie = tempo_atual
 
-    def draw(self, screen):
+    def draw(self, tela):
         # Desenha o fundo, deslocado pela câmera para criar o efeito de rolagem
-        screen.blit(self.background_image, (0, 0), self.camera)
+        tela.blit(self.imagem_fundo, (0, 0), self.camera)
         # Desenha todos os outros sprites por cima do fundo
         # Desenha todos os sprites, ajustando suas posições pela câmera
-        for sprite in self.all_sprites:
-            screen.blit(sprite.image, sprite.rect.move(-self.camera.x, -self.camera.y))
+        for sprite in self.todos_sprites:
+            tela.blit(sprite.image, sprite.rect.move(-self.camera.x, -self.camera.y))
 
             # Desenha a barra de vida para Zumbis e Obstáculos
             if isinstance(sprite, (Zombie, Obstacle)):
-                health_pct = (sprite.vida / sprite.vida_maxima) * 100
+                porcentagem_vida = (sprite.vida / sprite.vida_maxima) * 100
                 bar_x = sprite.rect.centerx - 25 - self.camera.x
                 bar_y = sprite.rect.top - 15 - self.camera.y
-                self.draw_health_bar(screen, bar_x, bar_y, health_pct, 50, 7) # Barra pequena (50x7)
+                self.draw_health_bar(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (50x7)
                 
             # Desenha um retângulo vermelho ao redor de cada sprite
-            pygame.draw.rect(screen, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
+            pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
         # Fundo da UI
-        ui_bg = pygame.Surface((self.width, 80), pygame.SRCALPHA)
+        ui_bg = pygame.Surface((self.largura, 80), pygame.SRCALPHA)
         ui_bg.fill((0, 0, 0, 150))
-        screen.blit(ui_bg, (0, 0))
+        tela.blit(ui_bg, (0, 0))
 
         # Lógica do cronômetro
         tempo_atual = pygame.time.get_ticks()
@@ -261,16 +261,16 @@ class Game:
 
         # Função auxiliar para desenhar cada item da UI
         def draw_ui_item(icon, text, x, y):
-            screen.blit(icon, (x, y))
-            text_surface = self.font.render(str(text), True, (255, 0, 0))
-            text_rect = text_surface.get_rect(center=(x + 20, y + 60))
-            screen.blit(text_surface, text_rect)
+            tela.blit(icon, (x, y))
+            superficie_texto = self.font.render(str(text), True, (255, 0, 0))
+            texto_rect = superficie_texto.get_rect(center=(x + 20, y + 60))
+            tela.blit(superficie_texto, texto_rect)
         
         # Desenha a barra de vida do jogador
-        player_health_pct = (self.player.vida / self.player.vida_maxima) * 100
-        screen.blit(self.health_icon, (20, 10))
-        self.draw_health_bar(screen, 70, 20, player_health_pct, 150, 25) # Barra grande (150x25)
+        porcentagem_vida_player = (self.player.vida / self.player.vida_maxima) * 100
+        tela.blit(self.icone_vida, (20, 10))
+        self.draw_health_bar(tela, 70, 20, porcentagem_vida_player, 150, 25) # Barra grande (150x25)
 
-        draw_ui_item(self.ammo_icon, self.player.municao, 230, 10)
-        draw_ui_item(self.coin_icon, self.player.moedas, 290, 10)
-        draw_ui_item(self.medkit_icon, self.player.kitmeds, 360, 10)
+        draw_ui_item(self.icone_municao, self.player.municao, 230, 10)
+        draw_ui_item(self.icone_moeda, self.player.moedas, 290, 10)
+        draw_ui_item(self.icone_medkit, self.player.kitmeds, 360, 10)

@@ -8,8 +8,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.imagem_original = pygame.image.load('Imagens/soldado_comum_parado.png').convert_alpha()
         self.imagem_original = pygame.transform.scale(self.imagem_original, (100, 100))
-        self.image = self.imagem_original
-        self.rect = self.image.get_rect(center=(x, y))
+        self.imagem = self.imagem_original
+        self.rect = self.imagem.get_rect(center=(x, y))
 
         self.vida = VIDA_PLAYER
         self.vida_maxima = VIDA_PLAYER
@@ -25,11 +25,11 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_LEFT]:
             self.rect.x -= self.velocidade
             self.direcao = -1 # Atualiza a direção
-            self.image = pygame.transform.flip(self.imagem_original, True, False) # Vira a imagem
+            self.imagem = pygame.transform.flip(self.imagem_original, True, False) # Vira a imagem
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.velocidade
             self.direcao = 1 # Atualiza a direção
-            self.image = self.imagem_original # Imagem original
+            self.imagem = self.imagem_original # Imagem original
         if keys[pygame.K_UP]:
             self.rect.y -= self.velocidade
         if keys[pygame.K_DOWN]:

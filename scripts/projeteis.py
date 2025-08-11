@@ -1,23 +1,23 @@
 #projeteis.py
 import pygame
-from scripts.constantes import BULLET_SPEED, BULLET_DAMAGE
+from scripts.constantes import VELOCIDADE_PROJETIL, DANO_PROJETIL
 
 class Projetil(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction, enemies_group, obstacles_group, collectibles_group, all_sprites_group):
+    def __init__(self, x, y, direcao, grupo_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites):
         super().__init__()
-        self.image = pygame.Surface((15, 5)) # Aparência da bala
-        self.image.fill((255, 255, 0)) # Cor da bala
-        self.rect = self.image.get_rect(center=(x, y))
-        self.speed = BULLET_SPEED
-        self.direction = direction # 1 para direita, -1 para esquerda
-        self.enemies_group = enemies_group
-        self.obstacles_group = obstacles_group
-        self.collectibles_group = collectibles_group
-        self.all_sprites_group = all_sprites_group
+        self.imagem = pygame.Surface((15, 5)) # Aparência da bala
+        self.imagem.fill((255, 255, 0)) # Cor da bala
+        self.rect = self.imagem.get_rect(center=(x, y))
+        self.velocidade = VELOCIDADE_PROJETIL
+        self.direcao = direcao # 1 para direita, -1 para esquerda
+        self.grupo_inimigos = grupo_inimigos
+        self.grupo_obstaculos = grupo_obstaculos
+        self.grupo_coletaveis = grupo_coletaveis
+        self.grupo_todos_sprites = grupo_todos_sprites
 
     def update(self):
         # O projétil se move apenas na horizontal e na direção do jogador
-        self.rect.x += self.speed * self.direction
+        self.rect.x += self.velocidade * self.direcao
 
         # Remove o projétil se ele sair da tela para não consumir memória
         if self.rect.left > 2500 or self.rect.right < 0:
@@ -25,22 +25,22 @@ class Projetil(pygame.sprite.Sprite):
 
          # Colisão com inimigos
         # Usamos spritecollide com True para matar o projétil e False para não matar o inimigo
-        collided_enemies = pygame.sprite.spritecollide(self, self.enemies_group, False)
-        if collided_enemies:
-            for enemy in collided_enemies:
-                enemy.take_damage(BULLET_DAMAGE)
+        inimigos_colididos = pygame.sprite.spritecollide(self, self.grupo_inimigos, False)
+        if inimigos_colididos:
+            for inimigo in inimigos_colididos:
+                inimigo.take_damage(DANO_PROJETIL)
             self.kill() # Destrói o projétil
             return
 
         # o erro com o tiro no onibus vem daqui ->
         # Colisão com obstáculos
-        for obstacle in pygame.sprite.spritecollide(self, self.obstacles_group, False):
-            if obstacle.take_damage(BULLET_DAMAGE):
-                item = obstacle.drop_item()
+        for obstaculo in pygame.sprite.spritecollide(self, self.grupo_obstaculos, False):
+            if obstaculo.take_damage(DANO_PROJETIL):
+                item = obstaculo.drop_item()
                 if item:
                     # Adiciona o item ao grupo de coletáveis e a todos os sprites
-                    self.collectibles_group.add(item)
-                    self.all_sprites_group.add(item)
+                    self.grupo_coletaveis.add(item)
+                    self.grupo_todos_sprites.add(item)
             self.kill()
             return
         
