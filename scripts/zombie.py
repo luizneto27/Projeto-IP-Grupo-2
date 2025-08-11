@@ -16,7 +16,6 @@ class Zombie(pygame.sprite.Sprite):
 
     def update(self, player):
         # Move o zumbi em direção ao jogador
-
         # Movimento no eixo X (horizontal)
         if self.rect.x < player.rect.x:
             self.rect.x += self.speed

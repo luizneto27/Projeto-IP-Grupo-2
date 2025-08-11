@@ -1,4 +1,8 @@
 #constantes.py
+# Definir as dimensões da tela
+LARGURA_TELA = 1240
+ALTURA_TELA = 768
+
 # Player
 PLAYER_SPEED = 3
 PLAYER_HEALTH = 100
@@ -27,4 +31,4 @@ CONTAINER_HEALTH = 100
 FIRE_RATE = 250
 
 # Respawn
-ZOMBIE_RESPAWN_INTERVAL = 3000  # em ms
+ZOMBIE_RESPAWN_INTERVAL = 2500  # em ms

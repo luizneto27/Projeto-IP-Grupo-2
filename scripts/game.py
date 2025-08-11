@@ -6,7 +6,11 @@ from scripts.zombie import Zombie
 from scripts.obstaculos import Flor, Container, Obstacle
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
-from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL, PLAYER_HIT_COOLDOWN, QTD_ZOMBIES
+from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL, PLAYER_HIT_COOLDOWN, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA
+
+# configura a tela e o titulo da janela
+tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+pygame.display.set_caption('Bem vindo ao jogo!')
 
 class Game:
     def __init__(self, width, height):
@@ -33,7 +37,13 @@ class Game:
         # A câmera é um retângulo que representa a área visível da tela
         self.camera = pygame.Rect(0, 0, self.width, self.height)
 
+        # tempo de jogo
+        self.tempo_limite = 120 # seg
+        self.tempo_inicial = pygame.time.get_ticks()
+        self.fonte = pygame.font.Font(None, 74)
+
         self.zumbis_spawnados = 0 # contador de zumbis
+        self.zumbis_mortos = 0 # o proprio nome ja diz
 
         #CARREGAR ÍCONES 
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
@@ -73,7 +83,7 @@ class Game:
             self.spawn_zombie()
 
         # Spawna 3 flores em posições aleatórias à frente (à direita) do jogador
-        for j in range(3):
+        for j in range(6):
             # Gera uma posição X aleatória entre 200 e 1000 pixels à direita do jogador
             pos_x = self.player.rect.centerx + random.randint(200, 1000)
             # Gera uma posição Y aleatória na altura do mapa
@@ -83,7 +93,7 @@ class Game:
             self.all_sprites.add(flor)
 
         # Spawna 2 containers em posições aleatórias à frente (à direita) do jogador
-        for k in range(2):
+        for k in range(4):
             # Gera uma posição X aleatória entre 300 e 1500 pixels à direita do jogador
             pos_x = self.player.rect.centerx + random.randint(300, 1500)
             # Gera uma posição Y aleatória na altura do mapa
@@ -100,7 +110,7 @@ class Game:
         self.enemies.add(zombie)
         self.all_sprites.add(zombie)
 
-        self.zumbis_spawnados += 1
+        self.zumbis_spawnados += 1 # ate atingir 100, se tiver errado corrige pra += 5
 
     def handle_shooting(self):
         #lógica de tiro
@@ -122,6 +132,7 @@ class Game:
     def handle_enemy_drops(self):
         for enemy in list(self.enemies):
             if enemy.health <= 0:
+                self.zumbis_mortos += 1
                 collectible = Moeda(enemy.rect.centerx, enemy.rect.centery)
                 self.collectibles.add(collectible)
                 self.all_sprites.add(collectible)
@@ -168,20 +179,32 @@ class Game:
         self.handle_player_damage()
 
         # Lógica de vitória: verifica se todos os zumbis foram eliminados
-        if self.zumbis_spawnados >= QTD_ZOMBIES:
-            # Chame sua tela de vitória aqui. Por exemplo: self.show_victory_screen()
+        if self.zumbis_spawnados >= QTD_ZOMBIES and self.zumbis_mortos == QTD_ZOMBIES:
+            tela.fill((0,0,0))
+            texto_vitoria = self.fonte.render("Você Venceu, Parabéns!", True, (0,255,50))
+            texto_rect = texto_vitoria.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(texto_vitoria, texto_rect)
+            pygame.display.flip()
+            pygame.time.wait(3000)  # Espera 3 segundos antes de fechar
+            pygame.quit()
             # Depois, você deve encerrar o jogo ou voltar ao menu
-            return 'victory'  # Retorna um estado para a classe principal
+            return
 
         # Lógica de derrota por morte do jogador
         if self.player.health <= 0:
-            # Chame sua tela de derrota aqui. Por exemplo: self.show_defeat_screen()
-            return 'defeat' # Retorna um estado para a classe principal
+            tela.fill((0,0,0))
+            texto_derrota = self.fonte.render("Você Perdeu!", True, (255,0,0))
+            texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(texto_derrota, texto_rect)
+            pygame.display.flip()
+            pygame.time.wait(3000)  # Espera 3 segundos antes de fechar
+            pygame.quit()
+            return
 
         # Lógica de derrota por tempo esgotado
-        tempo_decorrido = (pygame.time.get_ticks() - self.tempo_inicial) / 1000 # tempo limite e tempo inicial errado tem q importar
+        tempo_decorrido = (pygame.time.get_ticks() - self.tempo_inicial) / 1000
         if tempo_decorrido >= self.tempo_limite:
-            return 'defeat' # Retorna um estado para a classe principal
+            return
 
         # Respawn dinâmico
         current_time = pygame.time.get_ticks()
@@ -212,6 +235,29 @@ class Game:
         ui_bg = pygame.Surface((self.width, 80), pygame.SRCALPHA)
         ui_bg.fill((0, 0, 0, 150))
         screen.blit(ui_bg, (0, 0))
+
+        # Lógica do cronômetro
+        tempo_atual = pygame.time.get_ticks()
+        tempo_passado = (tempo_atual - self.tempo_inicial) / 1000  # Converte para segundos
+        tempo_restante = self.tempo_limite - tempo_passado
+
+        # lógica de vitória e derrota
+        if tempo_restante <= 0:
+            tela.fill((0,0,0))
+            texto_derrota = self.fonte.render("Tempo Esgotado! Você Perdeu.", True, (255,0,0))
+            texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(texto_derrota, texto_rect)
+            pygame.display.flip()
+            pygame.time.wait(3000)  # Espera 3 segundos antes de fechar
+            pygame.quit()
+
+        # Exibir o cronômetro
+        minutos = int(tempo_restante) // 60
+        segundos = int(tempo_restante) % 60
+        texto_tempo = f"{minutos:02}:{segundos:02}"
+            
+        texto_cronometro = self.fonte.render(texto_tempo, True, (255,0,0))
+        tela.blit(texto_cronometro, (1100, 15))
 
         # Função auxiliar para desenhar cada item da UI
         def draw_ui_item(icon, text, x, y):
