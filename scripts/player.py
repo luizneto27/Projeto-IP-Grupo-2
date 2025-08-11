@@ -1,64 +1,64 @@
 # player.py
 import pygame
 from scripts.projeteis import Projetil
-from scripts.constantes import PLAYER_HEALTH, PLAYER_SPEED, PLAYER_START_AMMO, PLAYER_START_COINS, PLAYER_START_MEDKITS
+from scripts.constantes import VIDA_PLAYER, VELOCIDADE_PLAYER, MUNICAO_INICIAL_PLAYER, MOEDAS_INICIAIS_PLAYER, KITMEDS_INICIAIS_PLAYER
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image_original = pygame.image.load('Imagens/soldado_comum_parado.png').convert_alpha()
-        self.image_original = pygame.transform.scale(self.image_original, (100, 100))
-        self.image = self.image_original
+        self.imagem_original = pygame.image.load('Imagens/soldado_comum_parado.png').convert_alpha()
+        self.imagem_original = pygame.transform.scale(self.imagem_original, (100, 100))
+        self.image = self.imagem_original
         self.rect = self.image.get_rect(center=(x, y))
 
-        self.health = PLAYER_HEALTH
-        self.max_health = PLAYER_HEALTH
-        self.ammo = PLAYER_START_AMMO
-        self.coins = PLAYER_START_COINS
-        self.medkits = PLAYER_START_MEDKITS
+        self.vida = VIDA_PLAYER
+        self.vida_maxima = VIDA_PLAYER
+        self.municao = MUNICAO_INICIAL_PLAYER
+        self.moedas = MOEDAS_INICIAIS_PLAYER
+        self.kitmeds = KITMEDS_INICIAIS_PLAYER
 
-        self.direction = 1 # 1 para direita, -1 para esquerda
-        self.speed = PLAYER_SPEED
+        self.direcao = 1 # 1 para direita, -1 para esquerda
+        self.velocidade = VELOCIDADE_PLAYER
 
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.rect.x -= self.speed
-            self.direction = -1 # Atualiza a direção
-            self.image = pygame.transform.flip(self.image_original, True, False) # Vira a imagem
+            self.rect.x -= self.velocidade
+            self.direcao = -1 # Atualiza a direção
+            self.image = pygame.transform.flip(self.imagem_original, True, False) # Vira a imagem
         if keys[pygame.K_RIGHT]:
-            self.rect.x += self.speed
-            self.direction = 1 # Atualiza a direção
-            self.image = self.image_original # Imagem original
+            self.rect.x += self.velocidade
+            self.direcao = 1 # Atualiza a direção
+            self.image = self.imagem_original # Imagem original
         if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
+            self.rect.y -= self.velocidade
         if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
+            self.rect.y += self.velocidade
 
-    def shoot(self,enemies_group, obstacles_group, collectibles_group, all_sprites_group):
-        if self.ammo > 0:
-            self.ammo -= 1
-            return Projetil(self.rect.centerx, self.rect.centery, self.direction, enemies_group, obstacles_group, collectibles_group, all_sprites_group)
+    def shoot(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites):
+        if self.municao > 0:
+            self.municao -= 1
+            return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites)
         return None
 
     def collect(self, item):
         if item.type == 'kitmedico':
-            self.medkits += 1 # Adiciona ao inventário
+            self.kitmeds += 1 # Adiciona ao inventário
         elif item.type == 'moeda':
-            self.coins += 1
+            self.moedas += 1
         elif item.type == 'municao':
-            self.ammo += 20
+            self.municao += 20
         item.kill()
 
     #Método para usar o kit médico
     def use_medkit(self):
-        if self.medkits > 0 and self.health < PLAYER_HEALTH:
-            self.medkits -= 1
-            self.health += 25
-            if self.health > PLAYER_HEALTH:
-                self.health = PLAYER_HEALTH
+        if self.kitmeds > 0 and self.vida < VIDA_PLAYER:
+            self.kitmeds -= 1
+            self.vida += 25
+            if self.vida > VIDA_PLAYER:
+                self.vida = VIDA_PLAYER
 
     def take_damage(self, amount):
-        self.health -= amount
-        if self.health <= 0:
+        self.vida -= amount
+        if self.vida <= 0:
             self.kill()

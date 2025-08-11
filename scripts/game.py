@@ -6,7 +6,7 @@ from scripts.zombie import Zombie
 from scripts.obstaculos import Flor, Container, Obstacle
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
-from scripts.constantes import FIRE_RATE, ZOMBIE_RESPAWN_INTERVAL, PLAYER_HIT_COOLDOWN, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA
+from scripts.constantes import CADENCIA_TIRO, INTERVALO_RESPAWN_ZOMBIE, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA
 
 # configura a tela e o titulo da janela
 tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
@@ -117,7 +117,7 @@ class Game:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             current_time = pygame.time.get_ticks()
-            if current_time - self.last_shot_time > FIRE_RATE:
+            if current_time - self.last_shot_time > CADENCIA_TIRO:
                 self.last_shot_time = current_time
                 projectile = self.player.shoot(self.enemies, self.obstacles, self.collectibles, self.all_sprites)
                 if projectile:
@@ -141,7 +141,7 @@ class Game:
     def handle_player_damage(self):
         current_time = pygame.time.get_ticks()
         # Verifica se o tempo de cooldown já passou
-        if current_time - self.last_player_hit > PLAYER_HIT_COOLDOWN:
+        if current_time - self.last_player_hit > COOLDOWN_DANO_JOGADOR:
             # Verifica colisão entre o jogador e os inimigos
             collided_enemies = pygame.sprite.spritecollide(self.player, self.enemies, False)
             if collided_enemies:
@@ -191,7 +191,7 @@ class Game:
             return
 
         # Lógica de derrota por morte do jogador
-        if self.player.health <= 0:
+        if self.player.vida <= 0:
             tela.fill((0,0,0))
             texto_derrota = self.fonte.render("Você Perdeu!", True, (255,0,0))
             texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
@@ -209,7 +209,7 @@ class Game:
         # Respawn dinâmico
         current_time = pygame.time.get_ticks()
         # Verifica se o tempo de respawn já passou E se ainda faltam zumbis para spawnar
-        if current_time - self.last_zombie_spawn > ZOMBIE_RESPAWN_INTERVAL and self.zumbis_spawnados < QTD_ZOMBIES:
+        if current_time - self.last_zombie_spawn > INTERVALO_RESPAWN_ZOMBIE and self.zumbis_spawnados < QTD_ZOMBIES:
             self.spawn_zombie()
             self.last_zombie_spawn = current_time
 
@@ -223,7 +223,7 @@ class Game:
 
             # Desenha a barra de vida para Zumbis e Obstáculos
             if isinstance(sprite, (Zombie, Obstacle)):
-                health_pct = (sprite.health / sprite.max_health) * 100
+                health_pct = (sprite.vida / sprite.vida_maxima) * 100
                 bar_x = sprite.rect.centerx - 25 - self.camera.x
                 bar_y = sprite.rect.top - 15 - self.camera.y
                 self.draw_health_bar(screen, bar_x, bar_y, health_pct, 50, 7) # Barra pequena (50x7)
@@ -267,10 +267,10 @@ class Game:
             screen.blit(text_surface, text_rect)
         
         # Desenha a barra de vida do jogador
-        player_health_pct = (self.player.health / self.player.max_health) * 100
+        player_health_pct = (self.player.vida / self.player.vida_maxima) * 100
         screen.blit(self.health_icon, (20, 10))
         self.draw_health_bar(screen, 70, 20, player_health_pct, 150, 25) # Barra grande (150x25)
 
-        draw_ui_item(self.ammo_icon, self.player.ammo, 230, 10)
-        draw_ui_item(self.coin_icon, self.player.coins, 290, 10)
-        draw_ui_item(self.medkit_icon, self.player.medkits, 360, 10)
+        draw_ui_item(self.ammo_icon, self.player.municao, 230, 10)
+        draw_ui_item(self.coin_icon, self.player.moedas, 290, 10)
+        draw_ui_item(self.medkit_icon, self.player.kitmeds, 360, 10)
