@@ -145,10 +145,10 @@ class Game:
             # Verifica colisão entre o jogador e os inimigos
             inimigos_colididos = pygame.sprite.spritecollide(self.player, self.inimigos, False)
             if inimigos_colididos:
-                # Pega o primeiro inimigo da lista de colisão
-                inimigo = inimigos_colididos[0]
-                # Aplica o dano no jogador
-                self.player.take_damage(inimigo.dano)
+                # Itera sobre todos os inimigos que colidiram
+                for inimigo in inimigos_colididos:
+                    # Aplica o dano no jogador
+                    self.player.take_damage(inimigo.dano)
                 # Atualiza o tempo do último hit
                 self.ultimo_hit_player = tempo_atual
 
