@@ -28,14 +28,14 @@ class Projetil(pygame.sprite.Sprite):
         inimigos_colididos = pygame.sprite.spritecollide(self, self.grupo_inimigos, False)
         if inimigos_colididos:
             for inimigo in inimigos_colididos:
-                inimigo.take_damage(DANO_PROJETIL)
+                inimigo.sofrer_dano(DANO_PROJETIL)
             self.kill() # Destrói o projétil
             return
 
         # Colisão com obstáculos
         for obstaculo in pygame.sprite.spritecollide(self, self.grupo_obstaculos, False):
-            if obstaculo.take_damage(DANO_PROJETIL):
-                item = obstaculo.drop_item()
+            if obstaculo.sofrer_dano(DANO_PROJETIL):
+                item = obstaculo.dropar_item()
                 if item:
                     # Adiciona o item ao grupo de coletáveis e a todos os sprites
                     self.grupo_coletaveis.add(item)

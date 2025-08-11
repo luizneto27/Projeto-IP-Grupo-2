@@ -3,7 +3,7 @@ import pygame
 from scripts.coletaveis import KitMedico, Municao
 from scripts.constantes import VIDA_FLOR, VIDA_CONTAINER
 
-class Obstacle(pygame.sprite.Sprite):
+class Obstaculo(pygame.sprite.Sprite):
     def __init__(self, x, y, caminho_imagem, vida, tipo_coletavel):
         super().__init__()
         self.imagem = pygame.image.load(caminho_imagem).convert_alpha()
@@ -12,21 +12,21 @@ class Obstacle(pygame.sprite.Sprite):
         self.vida_maxima = vida
         self.tipo_coletavel = tipo_coletavel
 
-    def take_damage(self, qtd):
+    def sofrer_dano(self, qtd):
         self.vida -= qtd
         if self.vida <= 0:
             self.kill()
             return True # Indica que foi destruído
         return False
     
-    def drop_item(self):
+    def dropar_item(self):
         if self.tipo_coletavel == 'kitmedico':
             return KitMedico(self.rect.centerx, self.rect.centery)
         elif self.tipo_coletavel == 'municao':
             return Municao(self.rect.centerx, self.rect.centery)
         return None
 
-class Flor(Obstacle):
+class Flor(Obstaculo):
     def __init__(self, x, y):
         super().__init__(x, y, 'Imagens/baron_1.webp', VIDA_FLOR, 'kitmedico')
         self.imagem = pygame.transform.scale(self.imagem, (60, 60))
@@ -42,7 +42,7 @@ class Flor(Obstacle):
         self.rect.center = old_center
 
 
-class Container(Obstacle):
+class Container(Obstaculo):
     def __init__(self, x, y):
         super().__init__(x, y, 'Imagens/onibus.png', VIDA_CONTAINER, 'municao')
         self.imagem = pygame.transform.scale(self.imagem, (150, 80))

@@ -28,6 +28,6 @@ class Zombie(pygame.sprite.Sprite):
         elif self.rect.y > player.rect.y:
             self.rect.y -= self.velocidade
 
-    def take_damage(self, qtd):
+    def sofrer_dano(self, qtd):
         self.vida -= qtd
         

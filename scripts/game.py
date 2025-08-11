@@ -3,7 +3,7 @@ import pygame
 import random
 from scripts.player import Player
 from scripts.zombie import Zombie
-from scripts.obstaculos import Flor, Container, Obstacle
+from scripts.obstaculos import Flor, Container, Obstaculo
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
 from scripts.constantes import CADENCIA_TIRO, INTERVALO_RESPAWN_ZOMBIE, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA
@@ -52,13 +52,13 @@ class Game:
         self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de moeda
         self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de kit médico
         
-        self.spawn_initial_elements()
+        self.spawnar_elementos_iniciais()
         self.ultimo_tiro = 0 # Controle para cadência de tiro
         self.ultimo_spawn_zombie = pygame.time.get_ticks()
         # Guarda o tempo do último hit no jogador para o cooldown
         self.ultimo_hit_player = 0
 
-    def draw_health_bar(self, superficie, x, y, porcentagem, largura_barra, altura_barra):
+    def draw_barra_vida(self, superficie, x, y, porcentagem, largura_barra, altura_barra):
         if porcentagem < 0:
             porcentagem = 0
         
@@ -77,7 +77,7 @@ class Game:
         pygame.draw.rect(superficie, (40, 40, 40), contorno_rect)  # Fundo cinza escuro
         pygame.draw.rect(superficie, cor, fill_rect) # Barra de vida
     
-    def spawn_initial_elements(self):
+    def spawnar_elementos_iniciais(self):
         # Posiciona os elementos no mundo de jogo
         for i in range(5):
             self.spawn_zombie()
@@ -112,24 +112,29 @@ class Game:
 
         self.zumbis_spawnados += 1 # ate atingir 100, se tiver errado corrige pra += 5
 
-    def handle_shooting(self):
+    def gerenciar_tiros(self):
         #lógica de tiro
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             tempo_atual = pygame.time.get_ticks()
             if tempo_atual - self.ultimo_tiro > CADENCIA_TIRO:
                 self.ultimo_tiro = tempo_atual
-                projetil = self.player.shoot(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites)
+                projetil = self.player.atirar(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites)
                 if projetil:
                     self.projeteis.add(projetil)
                     self.todos_sprites.add(projetil)
-       
-    def handle_collecting_items(self):
+    
+    def gerenciar_uso_kit_medico(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_e]:
+            self.player.usar_kitmed()
+
+    def gerenciar_coleta_itens(self):
         itens_coletados = pygame.sprite.spritecollide(self.player, self.coletaveis, True)
         for item in itens_coletados:
-            self.player.collect(item)
+            self.player.coletar(item)
     
-    def handle_enemy_drops(self):
+    def gerenciar_drops_inimigos(self):
         for inimigo in list(self.inimigos):
             if inimigo.vida <= 0:
                 self.zumbis_mortos += 1
@@ -138,7 +143,7 @@ class Game:
                 self.todos_sprites.add(coletavel)
                 inimigo.kill()
 
-    def handle_player_damage(self):
+    def gerenciar_dano_sofrido_player(self):
         tempo_atual = pygame.time.get_ticks()
         # Verifica se o tempo de cooldown já passou
         if tempo_atual - self.ultimo_hit_player > COOLDOWN_DANO_JOGADOR:
@@ -148,7 +153,7 @@ class Game:
                 # Itera sobre todos os inimigos que colidiram
                 for inimigo in inimigos_colididos:
                     # Aplica o dano no jogador
-                    self.player.take_damage(inimigo.dano)
+                    self.player.sofrer_dano(inimigo.dano)
                 # Atualiza o tempo do último hit
                 self.ultimo_hit_player = tempo_atual
 
@@ -173,10 +178,11 @@ class Game:
         if self.camera.bottom > self.altura_mundo:
             self.camera.bottom = self.altura_mundo
 
-        self.handle_shooting()
-        self.handle_collecting_items()
-        self.handle_enemy_drops()
-        self.handle_player_damage()
+        self.gerenciar_tiros()
+        self.gerenciar_coleta_itens()
+        self.gerenciar_drops_inimigos()
+        self.gerenciar_dano_sofrido_player()
+        self.gerenciar_uso_kit_medico()
 
         # Lógica de vitória: verifica se todos os zumbis foram eliminados
         if self.zumbis_spawnados >= QTD_ZOMBIES and self.zumbis_mortos == QTD_ZOMBIES:
@@ -222,11 +228,11 @@ class Game:
             tela.blit(sprite.imagem, sprite.rect.move(-self.camera.x, -self.camera.y))
 
             # Desenha a barra de vida para Zumbis e Obstáculos
-            if isinstance(sprite, (Zombie, Obstacle)):
+            if isinstance(sprite, (Zombie, Obstaculo)):
                 porcentagem_vida = (sprite.vida / sprite.vida_maxima) * 100
                 bar_x = sprite.rect.centerx - 25 - self.camera.x
                 bar_y = sprite.rect.top - 15 - self.camera.y
-                self.draw_health_bar(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (50x7)
+                self.draw_barra_vida(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (50x7)
                 
             # Desenha um retângulo vermelho ao redor de cada sprite
             pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
@@ -269,7 +275,7 @@ class Game:
         # Desenha a barra de vida do jogador
         porcentagem_vida_player = (self.player.vida / self.player.vida_maxima) * 100
         tela.blit(self.icone_vida, (20, 10))
-        self.draw_health_bar(tela, 70, 20, porcentagem_vida_player, 150, 25) # Barra grande (150x25)
+        self.draw_barra_vida(tela, 70, 20, porcentagem_vida_player, 150, 25) # Barra grande (150x25)
 
         draw_ui_item(self.icone_municao, self.player.municao, 230, 10)
         draw_ui_item(self.icone_moeda, self.player.moedas, 290, 10)

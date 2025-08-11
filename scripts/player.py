@@ -35,13 +35,13 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_DOWN]:
             self.rect.y += self.velocidade
 
-    def shoot(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites):
+    def atirar(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites):
         if self.municao > 0:
             self.municao -= 1
             return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites)
         return None
 
-    def collect(self, item):
+    def coletar(self, item):
         if item.type == 'kitmedico':
             self.kitmeds += 1 # Adiciona ao inventário
         elif item.type == 'moeda':
@@ -51,14 +51,14 @@ class Player(pygame.sprite.Sprite):
         item.kill()
 
     #Método para usar o kit médico
-    def use_medkit(self):
+    def usar_kitmed(self):
         if self.kitmeds > 0 and self.vida < VIDA_PLAYER:
             self.kitmeds -= 1
             self.vida += 25
             if self.vida > VIDA_PLAYER:
                 self.vida = VIDA_PLAYER
 
-    def take_damage(self, qtd):
+    def sofrer_dano(self, qtd):
         self.vida -= qtd
         if self.vida <= 0:
             self.kill()
