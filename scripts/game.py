@@ -148,7 +148,7 @@ class Game:
                 # Pega o primeiro inimigo da lista de colisão
                 inimigo = inimigos_colididos[0]
                 # Aplica o dano no jogador
-                self.player.take_damage(inimigo.damage)
+                self.player.take_damage(inimigo.dano)
                 # Atualiza o tempo do último hit
                 self.ultimo_hit_player = tempo_atual
 
@@ -219,7 +219,7 @@ class Game:
         # Desenha todos os outros sprites por cima do fundo
         # Desenha todos os sprites, ajustando suas posições pela câmera
         for sprite in self.todos_sprites:
-            tela.blit(sprite.image, sprite.rect.move(-self.camera.x, -self.camera.y))
+            tela.blit(sprite.imagem, sprite.rect.move(-self.camera.x, -self.camera.y))
 
             # Desenha a barra de vida para Zumbis e Obstáculos
             if isinstance(sprite, (Zombie, Obstacle)):

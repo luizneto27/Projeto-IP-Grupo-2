@@ -23,7 +23,7 @@ class Projetil(pygame.sprite.Sprite):
         if self.rect.left > 2500 or self.rect.right < 0:
             self.kill()
 
-         # Colisão com inimigos
+        # Colisão com inimigos
         # Usamos spritecollide com True para matar o projétil e False para não matar o inimigo
         inimigos_colididos = pygame.sprite.spritecollide(self, self.grupo_inimigos, False)
         if inimigos_colididos:
@@ -32,7 +32,6 @@ class Projetil(pygame.sprite.Sprite):
             self.kill() # Destrói o projétil
             return
 
-        # o erro com o tiro no onibus vem daqui ->
         # Colisão com obstáculos
         for obstaculo in pygame.sprite.spritecollide(self, self.grupo_obstaculos, False):
             if obstaculo.take_damage(DANO_PROJETIL):
