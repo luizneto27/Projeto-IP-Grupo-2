@@ -58,7 +58,7 @@ class Player(pygame.sprite.Sprite):
             if self.vida > VIDA_PLAYER:
                 self.vida = VIDA_PLAYER
 
-    def take_damage(self, amount):
-        self.vida -= amount
+    def take_damage(self, qtd):
+        self.vida -= qtd
         if self.vida <= 0:
             self.kill()

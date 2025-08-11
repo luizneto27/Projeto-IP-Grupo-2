@@ -1,34 +1,34 @@
 #constantes.py
-# Definir as dimensões da tela
+#dimensões da tela
 LARGURA_TELA = 1240
 ALTURA_TELA = 768
 
-# Player
-PLAYER_SPEED = 3
-PLAYER_HEALTH = 100
-PLAYER_START_AMMO = 50
-PLAYER_START_COINS = 0
-PLAYER_START_MEDKITS = 0
+#player
+VELOCIDADE_PLAYER = 3
+VIDA_PLAYER = 200
+MUNICAO_INICIAL_PLAYER = 50
+MOEDAS_INICIAIS_PLAYER = 0
+KITMEDS_INICIAIS_PLAYER = 0
 # Cooldown
-PLAYER_HIT_COOLDOWN = 1000 # 1 segundo de invencibilidade após ser atingido
+COOLDOWN_DANO_JOGADOR = 1000 # 1 segundo de invencibilidade após ser atingido
 
 # Projéteis
-BULLET_SPEED = 20
-BULLET_DAMAGE = 25
-BULLET_LIFETIME = 2500  # pixels
+VELOCIDADE_PROJETIL = 20
+DANO_PROJETIL = 25
+VIDA_UTIL_PROJETIL = 2500  # pixels
 
 # Zumbis
-ZOMBIE_HEALTH = 50
-ZOMBIE_SPEED = 1
-ZOMBIE_DAMAGE = 10  # Dano que o zumbi causa
+VIDA_ZOMBIE = 50
+VELOCIDADE_ZOMBIE = 1
+DANO_ZOMBIE = 10  # Dano que o zumbi causa
 QTD_ZOMBIES = 100
 
 # Obstáculos
-FLOR_HEALTH = 30
-CONTAINER_HEALTH = 100
+VIDA_FLOR = 30
+VIDA_CONTAINER = 100
 
 # Cadência de tiro (ms)
-FIRE_RATE = 250
+CADENCIA_TIRO = 250
 
 # Respawn
-ZOMBIE_RESPAWN_INTERVAL = 2500  # em ms
+INTERVALO_RESPAWN_ZOMBIE = 2500  # em ms
