@@ -19,7 +19,7 @@ class Game:
 
         #CÂMERA E MUNDO
         # Define o tamanho total
-        self.largura_mundo = largura * 2
+        self.largura_mundo = largura * 3
         self.altura_mundo = altura
 
         #imagem de fundo
