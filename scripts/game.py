@@ -3,10 +3,15 @@ import pygame
 import random
 from scripts.player import Player
 from scripts.zombie import Zombie
+from scripts.zombie_tank import ZombieTank
 from scripts.obstaculos import Flor, Container, Obstaculo
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
-from scripts.constantes import CADENCIA_TIRO, INTERVALO_RESPAWN_ZOMBIE, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA, ZOMBIES_POR_HORDA, INTERVALO_ENTRE_HORDAS,INTERVALO_SPAWN_ZUMBI_HORDA
+from scripts.constantes import (
+    CADENCIA_TIRO, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA, 
+    ZOMBIES_POR_HORDA, INTERVALO_ENTRE_HORDAS, INTERVALO_SPAWN_ZUMBI_HORDA, 
+    CHANCE_SPAWN_TANQUE 
+)
 
 # configura a tela e o titulo da janela
 tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
@@ -111,11 +116,19 @@ class Game:
         # Spawna o zumbi em uma posição aleatória na tela
         pos_x = self.camera.x + random.randint(0, self.largura)
         pos_y = random.randint(100, self.altura - 100)
-        zombie = Zombie(pos_x, pos_y)
-        self.inimigos.add(zombie)
-        self.todos_sprites.add(zombie)
 
-        self.zumbis_spawnados += 5 # ate atingir 100, se tiver errado corrige pra += 5
+        # Decide aleatoriamente qual zumbi criar
+        if random.random() < CHANCE_SPAWN_TANQUE:
+            # Cria um Zumbi Tanque na posição
+            novo_zumbi = ZombieTank(pos_x, pos_y)
+        else:
+            # Cria um Zumbi normal na posição
+            novo_zumbi = Zombie(pos_x, pos_y)
+
+        self.inimigos.add(novo_zumbi)
+        self.todos_sprites.add(novo_zumbi)
+
+        self.zumbis_spawnados += 1 # ate atingir 100, se tiver errado corrige pra += 5
 
     def spawn_horda(self, num_zombies):
         for i in range(num_zombies):

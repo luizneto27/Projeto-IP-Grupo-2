@@ -21,7 +21,14 @@ VIDA_UTIL_PROJETIL = 2500  # pixels
 VIDA_ZOMBIE = 50
 VELOCIDADE_ZOMBIE = 1
 DANO_ZOMBIE = 10  # Dano que o zumbi causa
-QTD_ZOMBIES = 100
+QTD_ZOMBIES = 40
+
+#Zumbi Tanque
+VIDA_ZUMBI_TANQUE = 200
+VELOCIDADE_ZUMBI_TANQUE = 0.5
+DANO_ZUMBI_TANQUE = 25
+CHANCE_SPAWN_TANQUE = 0.5 # chance de um zumbi da horda ser tanque
+
 
 # Obstáculos
 VIDA_FLOR = 30
