@@ -99,7 +99,7 @@ class Game:
         # Spawna 6 flores em posições aleatórias à frente (à direita) do jogador
         for j in range(6):
             # Gera uma posição X aleatória entre (X,Y) pixels à direita do jogador
-            pos_x = self.player.rect.centerx + random.randint(200, 3500)
+            pos_x = self.player.rect.centerx + random.randint(400, 3500)
             # Gera uma posição Y aleatória na altura do mapa
             pos_y = random.randint(100, self.altura - 100)
             flor = Flor(pos_x, pos_y)
@@ -109,7 +109,7 @@ class Game:
         # Spawna 4 containers em posições aleatórias à frente (à direita) do jogador
         for k in range(4):
             # Gera uma posição X aleatória entre (X,Y) pixels à direita do jogador
-            pos_x = self.player.rect.centerx + random.randint(300, 2000)
+            pos_x = self.player.rect.centerx + random.randint(300, 3500)
             # Gera uma posição Y aleatória na altura do mapa
             pos_y = random.randint(100, self.altura - 100)
             container = Container(pos_x, pos_y)
@@ -275,7 +275,7 @@ class Game:
                     self.draw_barra_vida(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (
                     
                 # Desenha um retângulo vermelho ao redor de cada sprite
-                # pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
+                pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
             # Fundo da UI
             ui_bg = pygame.Surface((self.largura, 95), pygame.SRCALPHA)
@@ -296,13 +296,13 @@ class Game:
             segundos = int(tempo_restante) % 60
             texto_tempo = f"{minutos:02}:{segundos:02}"
             
-            texto_cronometro = self.fonte.render(texto_tempo, True, (255,0,0))
+            texto_cronometro = self.fonte.render(texto_tempo, True, (255,255,255))
             tela.blit(texto_cronometro, (1100, 15))
 
             # Função auxiliar para desenhar cada item da UI
             def draw_ui_item(icon, text, x, y):
                 tela.blit(icon, (x, y))
-                superficie_texto = self.font.render(str(text), True, (255, 0, 0))
+                superficie_texto = self.font.render(str(text), True, (255, 255, 255))
                 texto_rect = superficie_texto.get_rect(center=(x + 30, y + 70))
                 tela.blit(superficie_texto, texto_rect)
             

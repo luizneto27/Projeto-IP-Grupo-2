@@ -15,7 +15,7 @@ COOLDOWN_DANO_JOGADOR = 1000 # 1 segundo de invencibilidade após ser atingido
 # Projéteis
 VELOCIDADE_PROJETIL = 20
 DANO_PROJETIL = 25
-VIDA_UTIL_PROJETIL = 2500  # pixels
+VIDA_UTIL_PROJETIL = 500  # pixels
 
 # Zumbis
 VIDA_ZOMBIE = 50
@@ -24,10 +24,10 @@ DANO_ZOMBIE = 10  # Dano que o zumbi causa
 QTD_ZOMBIES = 40
 
 #Zumbi Tanque
-VIDA_ZUMBI_TANQUE = 200
+VIDA_ZUMBI_TANQUE = 100
 VELOCIDADE_ZUMBI_TANQUE = 0.5
 DANO_ZUMBI_TANQUE = 25
-CHANCE_SPAWN_TANQUE = 0.5 # chance de um zumbi da horda ser tanque
+CHANCE_SPAWN_TANQUE = 0.20 # chance de um zumbi da horda ser tanque
 
 
 # Obstáculos
