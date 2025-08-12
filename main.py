@@ -21,8 +21,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False     
 
-    # lógica do jogo
-    game.update()
+    # A lógica do jogo (update) agora controla se o loop continua
+    if running:
+        running = game.update()
 
     # desenha todos os elementos na tela
     game.draw(tela)

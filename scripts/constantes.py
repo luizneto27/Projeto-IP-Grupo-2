@@ -32,7 +32,7 @@ CHANCE_SPAWN_TANQUE = 0.5 # chance de um zumbi da horda ser tanque
 
 # Obstáculos
 VIDA_FLOR = 30
-VIDA_CONTAINER = 100
+VIDA_CONTAINER = 75
 
 # Cadência de tiro (ms)
 CADENCIA_TIRO = 250

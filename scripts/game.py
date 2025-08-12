@@ -69,6 +69,10 @@ class Game:
         self.zumbis_para_spawnar_na_horda = 0
         self.ultimo_spawn_individual_zumbi = 0
 
+        # Controle de estado e timer de fim de jogo
+        self.estado_jogo = 'JOGANDO'  # Estados possíveis: JOGANDO, VITORIA, DERROTA, TEMPO_ESGOTADO
+        self.tempo_fim_jogo = 0
+
     def draw_barra_vida(self, superficie, x, y, porcentagem, largura_barra, altura_barra):
         if porcentagem < 0:
             porcentagem = 0
@@ -181,23 +185,46 @@ class Game:
                 self.ultimo_hit_player = tempo_atual
 
     def update(self):
+        # Se o jogo estiver em um estado final (VITORIA, DERROTA, etc.)
+        if self.estado_jogo != 'JOGANDO':
+            # Verificamos se já se passaram 3 segundos desde que o jogo acabou
+            if pygame.time.get_ticks() - self.tempo_fim_jogo > 3000:
+                return False  # Retorna False para encerrar o jogo
+            return True  # Se não, mantém o jogo rodando na tela final
+
+        # --- LÓGICA DE JOGO ATIVO (só executa se self.estado_jogo == 'JOGANDO') ---
         tempo_atual = pygame.time.get_ticks()
         # Lógica para iniciar o timer da horda no primeiro frame
         if not self.jogo_comecou:
             self.ultimo_spawn_zombie = tempo_atual
             self.jogo_comecou = True
 
-        # 1. Atualiza o jogador (e outros sprites que não precisam de argumentos)
+        # 1. VERIFICA CONDIÇÕES DE FIM DE JOGO E MUDA O ESTADO
+        if self.zumbis_spawnados >= QTD_ZOMBIES and self.zumbis_mortos == QTD_ZOMBIES:
+            self.estado_jogo = 'VITORIA'
+            self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
+
+        elif self.player.vida <= 0:
+            self.estado_jogo = 'DERROTA'
+            self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
+        
+        else:
+            tempo_passado = (tempo_atual - self.tempo_inicial) / 1000
+            tempo_restante = self.tempo_limite - tempo_passado
+            if tempo_restante <= 0:
+                self.estado_jogo = 'TEMPO_ESGOTADO'
+                self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
+        
+        # 2. ATUALIZA TODOS OS ELEMENTOS DO JOGO
         self.player.update()
-        self.coletaveis.update() # Atualiza os coletáveis (ex: animações, movimento)
-        # 2. Atualiza os inimigos, passando a posição do jogador
-        self.inimigos.update(self.player)
+        self.coletaveis.update() 
+        self.inimigos.update(self.player) #Atualiza os inimigos, passando a posição do jogador
         self.projeteis.update()
 
-        #ATUALIZAR A CÂMERA
+        #atualiza a câmera
         # A câmera segue o jogador, mantendo ele no centro da tela
         self.camera.center = self.player.rect.center
-          # Garante que a câmera não saia dos limites do mundo
+        # Garante que a câmera não saia dos limites do mundo
         if self.camera.left < 0:
             self.camera.left = 0
         if self.camera.right > self.largura_mundo:
@@ -213,30 +240,7 @@ class Game:
         self.gerenciar_dano_sofrido_player()
         self.gerenciar_uso_kit_medico()
 
-        # Lógica de vitória: verifica se todos os zumbis foram eliminados
-        if self.zumbis_spawnados >= QTD_ZOMBIES and self.zumbis_mortos == QTD_ZOMBIES:
-            tela.fill((0,0,0))
-            texto_vitoria = self.fonte.render("Você Venceu, Parabéns!", True, (0,255,50))
-            texto_rect = texto_vitoria.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-            tela.blit(texto_vitoria, texto_rect)
-            pygame.display.flip()
-            pygame.time.wait(3000)  # Espera 3 segundos antes de fechar
-            pygame.quit()
-            # Depois, você deve encerrar o jogo ou voltar ao menu
-            return
-
-        # Lógica de derrota por morte do jogador
-        if self.player.vida <= 0:
-            tela.fill((0,0,0))
-            texto_derrota = self.fonte.render("Você Perdeu!", True, (255,0,0))
-            texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-            tela.blit(texto_derrota, texto_rect)
-            pygame.display.flip()
-            pygame.time.wait(3000)  # Espera 3 segundos antes de fechar
-            pygame.quit()
-            return
-
-         # Lógica de hordas
+        # Lógica de hordas
         if not self.horda_em_andamento and tempo_atual - self.ultimo_spawn_zombie > INTERVALO_ENTRE_HORDAS and self.zumbis_spawnados < QTD_ZOMBIES:
             self.horda_em_andamento = True
             self.zumbis_para_spawnar_na_horda = ZOMBIES_POR_HORDA
@@ -251,64 +255,81 @@ class Game:
             if self.zumbis_para_spawnar_na_horda == 0:
                 self.horda_em_andamento = False
 
+        return True # Se chegou até aqui, o jogo continua
+
     def draw(self, tela):
-        # Desenha o fundo, deslocado pela câmera para criar o efeito de rolagem
-        tela.blit(self.imagem_fundo, (0, 0), self.camera)
-        # Desenha todos os outros sprites por cima do fundo
-        # Desenha todos os sprites, ajustando suas posições pela câmera
-        for sprite in self.todos_sprites:
-            tela.blit(sprite.imagem, sprite.rect.move(-self.camera.x, -self.camera.y))
+        # Se o jogo estiver acontecendo, desenha o jogo normalmente
+        if self.estado_jogo == 'JOGANDO':
+            # Desenha o fundo, deslocado pela câmera para criar o efeito de rolagem
+            tela.blit(self.imagem_fundo, (0, 0), self.camera)
+       
+            # Desenha todos os outros sprites por cima do fundo, ajustando suas posições pela câmera
+            for sprite in self.todos_sprites:
+                tela.blit(sprite.imagem, sprite.rect.move(-self.camera.x, -self.camera.y))
 
-            # Desenha a barra de vida para Zumbis e Obstáculos
-            if isinstance(sprite, (Zombie, Obstaculo)):
-                porcentagem_vida = (sprite.vida / sprite.vida_maxima) * 100
-                bar_x = sprite.rect.centerx - 25 - self.camera.x
-                bar_y = sprite.rect.top - 15 - self.camera.y
-                self.draw_barra_vida(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (50x7)
-                
-            # Desenha um retângulo vermelho ao redor de cada sprite
-            # pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
+                # Desenha a barra de vida para Zumbis e Obstáculos
+                if isinstance(sprite, (Zombie, Obstaculo)):
+                    porcentagem_vida = (sprite.vida / sprite.vida_maxima) * 100
+                    bar_x = sprite.rect.centerx - 25 - self.camera.x
+                    bar_y = sprite.rect.top - 15 - self.camera.y
+                    self.draw_barra_vida(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (
+                    
+                # Desenha um retângulo vermelho ao redor de cada sprite
+                # pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
-        # Fundo da UI
-        ui_bg = pygame.Surface((self.largura, 95), pygame.SRCALPHA)
-        ui_bg.fill((0, 0, 0, 150))
-        tela.blit(ui_bg, (0, 0))
+            # Fundo da UI
+            ui_bg = pygame.Surface((self.largura, 95), pygame.SRCALPHA)
+            ui_bg.fill((0, 0, 0, 150))
+            tela.blit(ui_bg, (0, 0))
 
-        # Lógica do cronômetro
-        tempo_atual = pygame.time.get_ticks()
-        tempo_passado = (tempo_atual - self.tempo_inicial) / 1000  # Converte para segundos
-        tempo_restante = self.tempo_limite - tempo_passado
+            # Lógica do cronômetro
+            tempo_atual = pygame.time.get_ticks()
+            tempo_passado = (tempo_atual - self.tempo_inicial) / 1000  # Converte para segundos
+            tempo_restante = self.tempo_limite - tempo_passado
 
-        # lógica de vitória e derrota
-        if tempo_restante <= 0:
-            tela.fill((0,0,0))
-            texto_derrota = self.fonte.render("Tempo Esgotado! Você Perdeu.", True, (255,0,0))
+            # Garante que o cronômetro não fique negativo na tela
+            if tempo_restante < 0:
+                tempo_restante = 0
+        
+            # Exibir o cronômetro
+            minutos = int(tempo_restante) // 60
+            segundos = int(tempo_restante) % 60
+            texto_tempo = f"{minutos:02}:{segundos:02}"
+            
+            texto_cronometro = self.fonte.render(texto_tempo, True, (255,0,0))
+            tela.blit(texto_cronometro, (1100, 15))
+
+            # Função auxiliar para desenhar cada item da UI
+            def draw_ui_item(icon, text, x, y):
+                tela.blit(icon, (x, y))
+                superficie_texto = self.font.render(str(text), True, (255, 0, 0))
+                texto_rect = superficie_texto.get_rect(center=(x + 30, y + 70))
+                tela.blit(superficie_texto, texto_rect)
+            
+            # Desenha a barra de vida do jogador e outros itens
+            porcentagem_vida_player = (self.player.vida / self.player.vida_maxima) * 100
+            tela.blit(self.icone_vida, (20, 10))
+            self.draw_barra_vida(tela, 70, 20, porcentagem_vida_player, 150, 25) # Barra grande (150x25)
+
+            draw_ui_item(self.icone_municao, self.player.municao, 230, 10)
+            draw_ui_item(self.icone_moeda, self.player.moedas, 290, 10)
+            draw_ui_item(self.icone_medkit, self.player.kitmeds, 360, 10)
+    
+        # Se o jogo acabou, desenha a tela final correspondente
+        elif self.estado_jogo == 'VITORIA':
+            tela.fill((0, 0, 0))
+            texto_vitoria = self.fonte.render("Você Venceu, Parabéns!", True, (0, 255, 50))
+            texto_rect = texto_vitoria.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(texto_vitoria, texto_rect)
+
+        elif self.estado_jogo == 'DERROTA':
+            tela.fill((0, 0, 0))
+            texto_derrota = self.fonte.render("Você Perdeu!", True, (255, 0, 0))
             texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
             tela.blit(texto_derrota, texto_rect)
-            pygame.display.flip()
-            pygame.time.wait(3000)  # Espera 3 segundos antes de fechar
-            pygame.quit()
 
-        # Exibir o cronômetro
-        minutos = int(tempo_restante) // 60
-        segundos = int(tempo_restante) % 60
-        texto_tempo = f"{minutos:02}:{segundos:02}"
-            
-        texto_cronometro = self.fonte.render(texto_tempo, True, (255,0,0))
-        tela.blit(texto_cronometro, (1100, 15))
-
-        # Função auxiliar para desenhar cada item da UI
-        def draw_ui_item(icon, text, x, y):
-            tela.blit(icon, (x, y))
-            superficie_texto = self.font.render(str(text), True, (255, 0, 0))
-            texto_rect = superficie_texto.get_rect(center=(x + 30, y + 70))
-            tela.blit(superficie_texto, texto_rect)
-        
-        # Desenha a barra de vida do jogador
-        porcentagem_vida_player = (self.player.vida / self.player.vida_maxima) * 100
-        tela.blit(self.icone_vida, (20, 10))
-        self.draw_barra_vida(tela, 70, 20, porcentagem_vida_player, 150, 25) # Barra grande (150x25)
-
-        draw_ui_item(self.icone_municao, self.player.municao, 230, 10)
-        draw_ui_item(self.icone_moeda, self.player.moedas, 290, 10)
-        draw_ui_item(self.icone_medkit, self.player.kitmeds, 360, 10)
+        elif self.estado_jogo == 'TEMPO_ESGOTADO':
+            tela.fill((0, 0, 0))
+            texto_derrota = self.fonte.render("Tempo Esgotado! Você Perdeu.", True, (255, 0, 0))
+            texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(texto_derrota, texto_rect)
