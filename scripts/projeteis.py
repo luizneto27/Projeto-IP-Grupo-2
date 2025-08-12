@@ -6,7 +6,7 @@ class Projetil(pygame.sprite.Sprite):
     def __init__(self, x, y, direcao, grupo_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites):
         super().__init__()
         self.imagem = pygame.Surface((15, 5)) # Aparência da bala
-        self.imagem.fill((255, 255, 0)) # Cor da bala
+        self.imagem.fill((255, 0, 0)) # Cor da bala
         self.rect = self.imagem.get_rect(center=(x, y))
         self.velocidade = VELOCIDADE_PROJETIL
         self.direcao = direcao # 1 para direita, -1 para esquerda
@@ -20,7 +20,7 @@ class Projetil(pygame.sprite.Sprite):
         self.rect.x += self.velocidade * self.direcao
 
         # Remove o projétil se ele sair da tela para não consumir memória
-        if self.rect.left > 2500 or self.rect.right < 0:
+        if self.rect.left > 4000 or self.rect.right < 0:
             self.kill()
 
         # Colisão com inimigos

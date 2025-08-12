@@ -10,15 +10,39 @@ class Coletavel(pygame.sprite.Sprite):
 
 class KitMedico(Coletavel):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/imagem-soldado-comum.gif', 'kitmedico')
-        self.imagem = pygame.transform.scale(self.imagem, (30, 30))
+        super().__init__(x, y, 'Imagens/kitmed.png', 'kitmedico')
+        self.imagem = pygame.transform.scale(self.imagem, (40, 40))
+
+         # Guarda a posição central original
+        old_center = self.rect.center
+        
+        self.rect = pygame.Rect(0, 0, 40, 40) 
+        
+        # Restaura a posição central
+        self.rect.center = old_center
 
 class Moeda(Coletavel):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/imagem-soldado-comum.gif', 'moeda')
-        self.imagem = pygame.transform.scale(self.imagem, (25, 25))
+        super().__init__(x, y, 'Imagens/moeda.png', 'moeda')
+        self.imagem = pygame.transform.scale(self.imagem, (40, 40))
+
+         # Guarda a posição central original
+        old_center = self.rect.center
+
+        self.rect = pygame.Rect(0, 0, 40, 40) 
+        
+        # Restaura a posição central
+        self.rect.center = old_center
 
 class Municao(Coletavel):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/imagem-soldado-comum.gif', 'municao')
-        self.imagem = pygame.transform.scale(self.imagem, (20, 30))
+        super().__init__(x, y, 'Imagens/caixa_municao.png', 'municao')
+        self.imagem = pygame.transform.scale(self.imagem, (40, 40))
+
+         # Guarda a posição central original
+        old_center = self.rect.center
+        
+        self.rect = pygame.Rect(0, 0, 40, 40) 
+        
+        # Restaura a posição central
+        self.rect.center = old_center

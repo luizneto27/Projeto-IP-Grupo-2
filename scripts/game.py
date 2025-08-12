@@ -10,7 +10,7 @@ from scripts.constantes import CADENCIA_TIRO, INTERVALO_RESPAWN_ZOMBIE, COOLDOWN
 
 # configura a tela e o titulo da janela
 tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-pygame.display.set_caption('Bem vindo ao jogo!')
+pygame.display.set_caption('CIn Defender!')
 
 class Game:
     def __init__(self, largura, altura):
@@ -47,10 +47,10 @@ class Game:
 
         #CARREGAR ÍCONES 
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
-        self.icone_vida = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de coração/vida
-        self.icone_municao = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de munição
-        self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de moeda
-        self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40)) # Substitua pela imagem de kit médico
+        self.icone_vida = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40))
+        self.icone_municao = pygame.transform.scale(pygame.image.load('Imagens/caixa_municao.png').convert_alpha(),(60,60))
+        self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/moeda.png').convert_alpha(),(60,60))
+        self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/kitmed.png').convert_alpha(),(60,60))
         
         self.spawnar_elementos_iniciais()
         self.ultimo_tiro = 0 # Controle para cadência de tiro
@@ -235,10 +235,10 @@ class Game:
                 self.draw_barra_vida(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (50x7)
                 
             # Desenha um retângulo vermelho ao redor de cada sprite
-            pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
+            # pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
         # Fundo da UI
-        ui_bg = pygame.Surface((self.largura, 80), pygame.SRCALPHA)
+        ui_bg = pygame.Surface((self.largura, 95), pygame.SRCALPHA)
         ui_bg.fill((0, 0, 0, 150))
         tela.blit(ui_bg, (0, 0))
 
@@ -269,7 +269,7 @@ class Game:
         def draw_ui_item(icon, text, x, y):
             tela.blit(icon, (x, y))
             superficie_texto = self.font.render(str(text), True, (255, 0, 0))
-            texto_rect = superficie_texto.get_rect(center=(x + 20, y + 60))
+            texto_rect = superficie_texto.get_rect(center=(x + 30, y + 70))
             tela.blit(superficie_texto, texto_rect)
         
         # Desenha a barra de vida do jogador
