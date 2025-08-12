@@ -32,3 +32,6 @@ CADENCIA_TIRO = 250
 
 # Respawn
 INTERVALO_RESPAWN_ZOMBIE = 2500  # em ms
+ZOMBIES_POR_HORDA = 10 # Zumbis por horda
+INTERVALO_ENTRE_HORDAS = 10000 # Intervalo entre hordas em ms
+INTERVALO_SPAWN_ZUMBI_HORDA = 600 # intervalo entre cada zumbi da horda

@@ -13,7 +13,7 @@ class KitMedico(Coletavel):
         super().__init__(x, y, 'Imagens/kitmed.png', 'kitmedico')
         self.imagem = pygame.transform.scale(self.imagem, (40, 40))
 
-         # Guarda a posição central original
+        # Guarda a posição central original
         old_center = self.rect.center
         
         self.rect = pygame.Rect(0, 0, 40, 40) 
@@ -26,7 +26,7 @@ class Moeda(Coletavel):
         super().__init__(x, y, 'Imagens/moeda.png', 'moeda')
         self.imagem = pygame.transform.scale(self.imagem, (40, 40))
 
-         # Guarda a posição central original
+        # Guarda a posição central original
         old_center = self.rect.center
 
         self.rect = pygame.Rect(0, 0, 40, 40) 
@@ -39,7 +39,7 @@ class Municao(Coletavel):
         super().__init__(x, y, 'Imagens/caixa_municao.png', 'municao')
         self.imagem = pygame.transform.scale(self.imagem, (40, 40))
 
-         # Guarda a posição central original
+        # Guarda a posição central original
         old_center = self.rect.center
         
         self.rect = pygame.Rect(0, 0, 40, 40) 

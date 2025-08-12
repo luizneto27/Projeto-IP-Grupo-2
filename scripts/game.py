@@ -6,7 +6,7 @@ from scripts.zombie import Zombie
 from scripts.obstaculos import Flor, Container, Obstaculo
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil
-from scripts.constantes import CADENCIA_TIRO, INTERVALO_RESPAWN_ZOMBIE, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA
+from scripts.constantes import CADENCIA_TIRO, INTERVALO_RESPAWN_ZOMBIE, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA, ZOMBIES_POR_HORDA, INTERVALO_ENTRE_HORDAS,INTERVALO_SPAWN_ZUMBI_HORDA
 
 # configura a tela e o titulo da janela
 tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
@@ -43,7 +43,7 @@ class Game:
         self.fonte = pygame.font.Font(None, 74)
 
         self.zumbis_spawnados = 0 # contador de zumbis
-        self.zumbis_mortos = 0 # o proprio nome ja diz
+        self.zumbis_mortos = 0 
 
         #CARREGAR ÍCONES 
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
@@ -54,9 +54,15 @@ class Game:
         
         self.spawnar_elementos_iniciais()
         self.ultimo_tiro = 0 # Controle para cadência de tiro
-        self.ultimo_spawn_zombie = pygame.time.get_ticks()
         # Guarda o tempo do último hit no jogador para o cooldown
         self.ultimo_hit_player = 0
+        #Flag para controlar o início do jogo
+        self.jogo_comecou = False
+
+        #atributos para gerenciamento da horda
+        self.horda_em_andamento = False
+        self.zumbis_para_spawnar_na_horda = 0
+        self.ultimo_spawn_individual_zumbi = 0
 
     def draw_barra_vida(self, superficie, x, y, porcentagem, largura_barra, altura_barra):
         if porcentagem < 0:
@@ -79,23 +85,22 @@ class Game:
     
     def spawnar_elementos_iniciais(self):
         # Posiciona os elementos no mundo de jogo
-        for i in range(5):
-            self.spawn_zombie()
-
-        # Spawna 3 flores em posições aleatórias à frente (à direita) do jogador
+        # Os zumbis iniciais aparecem na primeira horda
+    
+        # Spawna 6 flores em posições aleatórias à frente (à direita) do jogador
         for j in range(6):
-            # Gera uma posição X aleatória entre 200 e 1000 pixels à direita do jogador
-            pos_x = self.player.rect.centerx + random.randint(200, 1000)
+            # Gera uma posição X aleatória entre (X,Y) pixels à direita do jogador
+            pos_x = self.player.rect.centerx + random.randint(200, 3500)
             # Gera uma posição Y aleatória na altura do mapa
             pos_y = random.randint(100, self.altura - 100)
             flor = Flor(pos_x, pos_y)
             self.obstaculos.add(flor)
             self.todos_sprites.add(flor)
 
-        # Spawna 2 containers em posições aleatórias à frente (à direita) do jogador
+        # Spawna 4 containers em posições aleatórias à frente (à direita) do jogador
         for k in range(4):
-            # Gera uma posição X aleatória entre 300 e 1500 pixels à direita do jogador
-            pos_x = self.player.rect.centerx + random.randint(300, 1500)
+            # Gera uma posição X aleatória entre (X,Y) pixels à direita do jogador
+            pos_x = self.player.rect.centerx + random.randint(300, 2000)
             # Gera uma posição Y aleatória na altura do mapa
             pos_y = random.randint(100, self.altura - 100)
             container = Container(pos_x, pos_y)
@@ -103,14 +108,19 @@ class Game:
             self.todos_sprites.add(container)
 
     def spawn_zombie(self):
-        # Spawna o zumbi em uma altura aleatória, à direita do mundo visível
+        # Spawna o zumbi em uma posição aleatória na tela
+        pos_x = self.camera.x + random.randint(0, self.largura)
         pos_y = random.randint(100, self.altura - 100)
-        pos_x = self.camera.right + random.randint(50, 200)
         zombie = Zombie(pos_x, pos_y)
         self.inimigos.add(zombie)
         self.todos_sprites.add(zombie)
 
-        self.zumbis_spawnados += 1 # ate atingir 100, se tiver errado corrige pra += 5
+        self.zumbis_spawnados += 5 # ate atingir 100, se tiver errado corrige pra += 5
+
+    def spawn_horda(self, num_zombies):
+        for i in range(num_zombies):
+            if self.zumbis_spawnados < QTD_ZOMBIES:
+                self.spawn_zombie()
 
     def gerenciar_tiros(self):
         #lógica de tiro
@@ -158,6 +168,12 @@ class Game:
                 self.ultimo_hit_player = tempo_atual
 
     def update(self):
+        tempo_atual = pygame.time.get_ticks()
+        # Lógica para iniciar o timer da horda no primeiro frame
+        if not self.jogo_comecou:
+            self.ultimo_spawn_zombie = tempo_atual
+            self.jogo_comecou = True
+
         # 1. Atualiza o jogador (e outros sprites que não precisam de argumentos)
         self.player.update()
         self.coletaveis.update() # Atualiza os coletáveis (ex: animações, movimento)
@@ -207,17 +223,20 @@ class Game:
             pygame.quit()
             return
 
-        # Lógica de derrota por tempo esgotado
-        tempo_decorrido = (pygame.time.get_ticks() - self.tempo_inicial) / 1000
-        if tempo_decorrido >= self.tempo_limite:
-            return
-
-        # Respawn dinâmico
-        tempo_atual = pygame.time.get_ticks()
-        # Verifica se o tempo de respawn já passou E se ainda faltam zumbis para spawnar
-        if tempo_atual - self.ultimo_spawn_zombie > INTERVALO_RESPAWN_ZOMBIE and self.zumbis_spawnados < QTD_ZOMBIES:
-            self.spawn_zombie()
+         # Lógica de hordas
+        if not self.horda_em_andamento and tempo_atual - self.ultimo_spawn_zombie > INTERVALO_ENTRE_HORDAS and self.zumbis_spawnados < QTD_ZOMBIES:
+            self.horda_em_andamento = True
+            self.zumbis_para_spawnar_na_horda = ZOMBIES_POR_HORDA
             self.ultimo_spawn_zombie = tempo_atual
+
+        if self.horda_em_andamento:
+            if tempo_atual - self.ultimo_spawn_individual_zumbi > INTERVALO_SPAWN_ZUMBI_HORDA and self.zumbis_para_spawnar_na_horda > 0:
+                self.spawn_zombie()
+                self.zumbis_para_spawnar_na_horda -= 1
+                self.ultimo_spawn_individual_zumbi = tempo_atual
+            
+            if self.zumbis_para_spawnar_na_horda == 0:
+                self.horda_em_andamento = False
 
     def draw(self, tela):
         # Desenha o fundo, deslocado pela câmera para criar o efeito de rolagem
