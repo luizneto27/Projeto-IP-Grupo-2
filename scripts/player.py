@@ -35,10 +35,10 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_DOWN]:
             self.rect.y += self.velocidade
 
-    def atirar(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites):
+    def atirar(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas):
         if self.municao > 0:
             self.municao -= 1
-            return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites)
+            return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas)
         return None
 
     def coletar(self, item):

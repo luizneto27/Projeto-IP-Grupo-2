@@ -6,7 +6,7 @@ from scripts.zombie import Zombie
 from scripts.zombie_tank import ZombieTank
 from scripts.obstaculos import Flor, Container, Obstaculo
 from scripts.coletaveis import KitMedico, Moeda, Municao
-from scripts.projeteis import Projetil
+from scripts.projeteis import Projetil, ParticulaImpacto
 from scripts.constantes import (
     CADENCIA_TIRO, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA, 
     ZOMBIES_POR_HORDA, INTERVALO_ENTRE_HORDAS, INTERVALO_SPAWN_ZUMBI_HORDA, 
@@ -37,6 +37,7 @@ class Game:
         self.obstaculos = pygame.sprite.Group()
         self.coletaveis = pygame.sprite.Group()
         self.projeteis = pygame.sprite.Group()
+        self.particulas = pygame.sprite.Group()
         self.todos_sprites = pygame.sprite.Group(self.player)
         
         # A câmera é um retângulo que representa a área visível da tela
@@ -146,7 +147,7 @@ class Game:
             tempo_atual = pygame.time.get_ticks()
             if tempo_atual - self.ultimo_tiro > CADENCIA_TIRO:
                 self.ultimo_tiro = tempo_atual
-                projetil = self.player.atirar(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites)
+                projetil = self.player.atirar(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites, self.particulas)
                 if projetil:
                     self.projeteis.add(projetil)
                     self.todos_sprites.add(projetil)
@@ -220,6 +221,7 @@ class Game:
         self.coletaveis.update() 
         self.inimigos.update(self.player) #Atualiza os inimigos, passando a posição do jogador
         self.projeteis.update()
+        self.particulas.update()
 
         #atualiza a câmera
         # A câmera segue o jogador, mantendo ele no centro da tela
