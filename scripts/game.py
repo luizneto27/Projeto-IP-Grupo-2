@@ -213,7 +213,7 @@ class Game:
                 self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
         
         # 2. ATUALIZA TODOS OS ELEMENTOS DO JOGO
-        self.player.update()
+        self.player.update(self.largura_mundo)
         self.coletaveis.update() 
         self.inimigos.update(self.player) #Atualiza os inimigos, passando a posição do jogador
         self.projeteis.update()

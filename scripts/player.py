@@ -1,7 +1,7 @@
 # player.py
 import pygame
 from scripts.projeteis import Projetil
-from scripts.constantes import VIDA_PLAYER, VELOCIDADE_PLAYER, MUNICAO_INICIAL_PLAYER, MOEDAS_INICIAIS_PLAYER, KITMEDS_INICIAIS_PLAYER
+from scripts.constantes import VIDA_PLAYER, VELOCIDADE_PLAYER, MUNICAO_INICIAL_PLAYER, MOEDAS_INICIAIS_PLAYER, KITMEDS_INICIAIS_PLAYER, ALTURA_TELA
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -88,7 +88,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.imagem.get_rect()
         self.rect.center = centro  
 
-    def update(self):
+    def update(self, largura_mundo):
         # Verifica se a animação de tiro deve terminar
         if self.atirando and pygame.time.get_ticks() - self.tempo_ultimo_tiro > self.duracao_animacao_tiro:
             self.atirando = False
@@ -97,22 +97,40 @@ class Player(pygame.sprite.Sprite):
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.rect.x -= self.velocidade
-            self.direcao = -1 # Atualiza a direção
+            # Impede o jogador de sair pela esquerda do mundo
+            if self.rect.left > self.velocidade:
+                self.rect.x -= self.velocidade
+            else:
+                self.rect.left = 0
+            self.direcao = -1
             self.andando = True
 
         if keys[pygame.K_RIGHT]:
-            self.rect.x += self.velocidade
+            # Impede o jogador de sair pela direita do mundo
+            if self.rect.right < largura_mundo - self.velocidade:
+                self.rect.x += self.velocidade
+            else:
+                self.rect.right = largura_mundo
             self.direcao = 1 
             self.andando = True
 
         if keys[pygame.K_UP]:
-            self.rect.y -= self.velocidade
+            # Impede o jogador de sair por cima
+            if self.rect.top > self.velocidade:
+                self.rect.y -= self.velocidade
+            else:
+                self.rect.top = 0
             self.andando = True
 
         if keys[pygame.K_DOWN]:
-            self.rect.y += self.velocidade
+            # Impede o jogador de sair por baixo
+            if self.rect.bottom < ALTURA_TELA - self.velocidade:
+                self.rect.y += self.velocidade
+            else:
+                self.rect.bottom = ALTURA_TELA
             self.andando = True
+        
+        self._animar()
         
         self._animar()
 
