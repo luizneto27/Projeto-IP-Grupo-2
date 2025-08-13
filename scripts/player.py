@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.walking_frames.append(pygame.transform.scale(frame, (120, 120)))
 
         FRAME_LARGURA_TIRO = 107
-        FRAME_ALTURA_TIRO = 70
+        FRAME_ALTURA_TIRO = 72
         for i in range(3): # Linhas
             for j in range(3): # Colunas
                 # Para a extração se chegar no 8º frame 
