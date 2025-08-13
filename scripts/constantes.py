@@ -27,7 +27,7 @@ QTD_ZOMBIES = 40
 VIDA_ZUMBI_TANQUE = 100
 VELOCIDADE_ZUMBI_TANQUE = 1 # se deixar numero decimal, buga o movimento dele
 DANO_ZUMBI_TANQUE = 25
-CHANCE_SPAWN_TANQUE = 0.75 # chance de um zumbi da horda ser tanque
+CHANCE_SPAWN_TANQUE = 0.20 # chance de um zumbi da horda ser tanque
 
 
 # Obstáculos
