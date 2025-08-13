@@ -28,14 +28,12 @@ class Obstaculo(pygame.sprite.Sprite):
 
 class Flor(Obstaculo):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/baron_1.webp', VIDA_FLOR, 'kitmedico')
+        super().__init__(x, y, 'Imagens/mochila.png', VIDA_FLOR, 'kitmedico')
         self.imagem = pygame.transform.scale(self.imagem, (60, 60))
 
         # Guarda a posição central original
         old_center = self.rect.center
         
-        # Redimensiona o retângulo de colisão (ex: para 40x40)
-        # Ajuste os valores para o tamanho que achar melhor
         self.rect = pygame.Rect(0, 0, 60, 60) 
         
         # Restaura a posição central
@@ -44,15 +42,14 @@ class Flor(Obstaculo):
 
 class Container(Obstaculo):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/onibus.png', VIDA_CONTAINER, 'municao')
-        self.imagem = pygame.transform.scale(self.imagem, (150, 80))
+        super().__init__(x, y, 'Imagens/caixa_municao.png', VIDA_CONTAINER, 'municao')
+        self.imagem = pygame.transform.scale(self.imagem, (80, 80))
         
         # Guarda a posição central original
         old_center = self.rect.center
         
         # Redimensiona o retângulo de colisão para ser menor que a imagem
-        # Os valores (130, 60) são exemplos, você pode ajustá-los
-        self.rect = pygame.Rect(0, 0, 150, 80) 
+        self.rect = pygame.Rect(0, 0, 80, 80) 
         
         # Restaura a posição central do novo retângulo
         self.rect.center = old_center

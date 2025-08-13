@@ -36,13 +36,13 @@ class Moeda(Coletavel):
 
 class Municao(Coletavel):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/caixa_municao.png', 'municao')
-        self.imagem = pygame.transform.scale(self.imagem, (50, 50))
+        super().__init__(x, y, 'Imagens/balas.png', 'municao')
+        self.imagem = pygame.transform.scale(self.imagem, (40, 40))
 
         # Guarda a posição central original
         old_center = self.rect.center
         
-        self.rect = pygame.Rect(0, 0, 50, 50) 
+        self.rect = pygame.Rect(0, 0, 40, 40) 
         
         # Restaura a posição central
         self.rect.center = old_center

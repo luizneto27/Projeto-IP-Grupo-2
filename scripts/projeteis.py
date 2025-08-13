@@ -54,7 +54,7 @@ class Projetil(pygame.sprite.Sprite):
             return
         
     def criar_efeito_impacto(self):
-        # Cria várias partículas pequenas para simular uma explosão no local do impacto
+        # cria particulas de bala no objeto atingido
         for i in range(random.randint(5, 10)):
             particula = ParticulaImpacto(self.rect.centerx, self.rect.centery)
             self.grupo_particulas.add(particula)

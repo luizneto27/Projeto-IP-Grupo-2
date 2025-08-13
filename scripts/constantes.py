@@ -27,7 +27,7 @@ QTD_ZOMBIES = 40
 VIDA_ZUMBI_TANQUE = 100
 VELOCIDADE_ZUMBI_TANQUE = 0.5
 DANO_ZUMBI_TANQUE = 25
-CHANCE_SPAWN_TANQUE = 0.20 # chance de um zumbi da horda ser tanque
+CHANCE_SPAWN_TANQUE = 0.2 # chance de um zumbi da horda ser tanque
 
 
 # Obstáculos
@@ -40,5 +40,5 @@ CADENCIA_TIRO = 250
 # Respawn
 INTERVALO_RESPAWN_ZOMBIE = 2500  # em ms
 ZOMBIES_POR_HORDA = 10 # Zumbis por horda
-INTERVALO_ENTRE_HORDAS = 1000 # Intervalo entre hordas em ms
+INTERVALO_ENTRE_HORDAS = 6000 # Intervalo entre hordas em ms
 INTERVALO_SPAWN_ZUMBI_HORDA = 600 # intervalo entre cada zumbi da horda

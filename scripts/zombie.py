@@ -6,7 +6,6 @@ class Zombie(pygame.sprite.Sprite):
     # criando o zumbi à direita
     def __init__(self, x, y):
         super().__init__()
-        # 1. Carregue a nova imagem. Sugiro salvá-la como 'zumbi_movimento.png' na pasta Imagens.
         self.spritesheet = pygame.image.load('Imagens/zumbi.png').convert_alpha()
         
         self.frames = []
@@ -30,7 +29,7 @@ class Zombie(pygame.sprite.Sprite):
             frame_redimensionado = pygame.transform.scale(frame, (80, 80))
             self.frames.append(frame_redimensionado)
             
-        # O resto da lógica de animação continua a mesma
+        # O resto da lógica de animação
         self.frame_atual = 0
         self.imagem = self.frames[self.frame_atual]
         self.rect = self.imagem.get_rect(center=(x, y))

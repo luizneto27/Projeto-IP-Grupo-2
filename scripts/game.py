@@ -7,11 +7,7 @@ from scripts.zombie_tank import ZombieTank
 from scripts.obstaculos import Flor, Container, Obstaculo
 from scripts.coletaveis import KitMedico, Moeda, Municao
 from scripts.projeteis import Projetil, ParticulaImpacto
-from scripts.constantes import (
-    CADENCIA_TIRO, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA, 
-    ZOMBIES_POR_HORDA, INTERVALO_ENTRE_HORDAS, INTERVALO_SPAWN_ZUMBI_HORDA, 
-    CHANCE_SPAWN_TANQUE 
-)
+from scripts.constantes import CADENCIA_TIRO, COOLDOWN_DANO_JOGADOR, QTD_ZOMBIES, LARGURA_TELA, ALTURA_TELA, ZOMBIES_POR_HORDA, INTERVALO_ENTRE_HORDAS, INTERVALO_SPAWN_ZUMBI_HORDA, CHANCE_SPAWN_TANQUE 
 
 # configura a tela e o titulo da janela
 tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
@@ -28,7 +24,7 @@ class Game:
         self.altura_mundo = altura
 
         #imagem de fundo
-        self.imagem_fundo = pygame.image.load('Imagens/fundodojogo.webp').convert()
+        self.imagem_fundo = pygame.image.load('Imagens/fundodojogo.png').convert()
         self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (self.largura_mundo, altura))
 
         #Grupo de Sprites
@@ -53,8 +49,8 @@ class Game:
 
         #CARREGAR ÍCONES 
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
-        self.icone_vida = pygame.transform.scale(pygame.image.load('Imagens/imagem-soldado-comum.gif').convert_alpha(),(40,40))
-        self.icone_municao = pygame.transform.scale(pygame.image.load('Imagens/caixa_municao.png').convert_alpha(),(60,60))
+        self.icone_vida = pygame.transform.scale(pygame.image.load('Imagens/coracao.png').convert_alpha(),(50,50))
+        self.icone_municao = pygame.transform.scale(pygame.image.load('Imagens/balas.png').convert_alpha(),(60,60))
         self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/moeda.png').convert_alpha(),(60,60))
         self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/kitmed.png').convert_alpha(),(60,60))
         
