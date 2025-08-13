@@ -273,7 +273,7 @@ class Game:
                     self.draw_barra_vida(tela, bar_x, bar_y, porcentagem_vida, 50, 7) # Barra pequena (
                     
                 # Desenha um retângulo vermelho ao redor de cada sprite
-                pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
+                #pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
             # Fundo da UI
             ui_bg = pygame.Surface((self.largura, 95), pygame.SRCALPHA)

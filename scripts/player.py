@@ -6,38 +6,124 @@ from scripts.constantes import VIDA_PLAYER, VELOCIDADE_PLAYER, MUNICAO_INICIAL_P
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.imagem_original = pygame.image.load('Imagens/soldado_comum_parado.png').convert_alpha()
-        self.imagem_original = pygame.transform.scale(self.imagem_original, (100, 100))
-        self.imagem = self.imagem_original
+        walking_spritesheet = pygame.image.load('Imagens/sprite_player.png').convert_alpha()
+        shooting_spritesheet = pygame.image.load('Imagens/player_atirando.png').convert_alpha()
+
+        # Lista para guardar os frames da animação de caminhada
+        self.walking_frames = []
+        self.shooting_frames = []
+        
+        # Dimensões de cada frame na spritesheet
+        FRAME_LARGURA_CAMINHO = 72
+        FRAME_ALTURA_CAMINHO = 72
+        for j in range(5):
+            frame = walking_spritesheet.subsurface((j * FRAME_LARGURA_CAMINHO, 0, FRAME_LARGURA_CAMINHO, FRAME_ALTURA_CAMINHO))
+            self.walking_frames.append(pygame.transform.scale(frame, (100, 100)))
+        frame = walking_spritesheet.subsurface((0, FRAME_ALTURA_CAMINHO, FRAME_LARGURA_CAMINHO, FRAME_ALTURA_CAMINHO))
+        self.walking_frames.append(pygame.transform.scale(frame, (100, 100)))
+
+        FRAME_LARGURA_TIRO = 72
+        FRAME_ALTURA_TIRO = 72
+        for i in range(3): # Linhas
+            for j in range(3): # Colunas
+                # Para a extração se chegar no 8º frame 
+                if len(self.shooting_frames) >= 8:
+                    break
+                frame = shooting_spritesheet.subsurface((j * FRAME_LARGURA_TIRO, i * FRAME_ALTURA_TIRO, FRAME_LARGURA_TIRO, FRAME_ALTURA_TIRO))
+                self.shooting_frames.append(pygame.transform.scale(frame, (150, 100))) # Ajusta o tamanho do frame de tiro
+
+        # Atributos de controle da animação
+        self.frame_atual = 0
+        self.imagem = self.walking_frames[self.frame_atual]# Começa com a imagem de "parado"
         self.rect = self.imagem.get_rect(center=(x, y))
+
+        self.ultima_atualizacao_anim = pygame.time.get_ticks()
+        self.velocidade_animacao = 100  # ms, velocidade da animação de caminhada
+        
+        # Atributo para controlar o estado (parado ou movendo)
+        self.andando = False
+        self.atirando = False
+        self.tempo_ultimo_tiro = 0
+        self.duracao_animacao_tiro = 200 # Animação de tiro dura 300ms
+        
+        self.direcao = 1 # 1 para direita, -1 para esquerda
 
         self.vida = VIDA_PLAYER
         self.vida_maxima = VIDA_PLAYER
         self.municao = MUNICAO_INICIAL_PLAYER
         self.moedas = MOEDAS_INICIAIS_PLAYER
         self.kitmeds = KITMEDS_INICIAIS_PLAYER
-
-        self.direcao = 1 # 1 para direita, -1 para esquerda
         self.velocidade = VELOCIDADE_PLAYER
+        
+    def _animar(self):
+        agora = pygame.time.get_ticks()
+
+        if self.atirando:
+            frames_atuais = self.shooting_frames
+            velocidade_anim = 50 # Animação de tiro mais rápida
+        elif self.andando:
+            frames_atuais = self.walking_frames
+            velocidade_anim = self.velocidade_animacao
+        else: # Parado
+            frames_atuais = self.walking_frames
+            self.frame_atual = 0 # Fica no primeiro frame se parado
+
+        # Lógica de animação
+        if self.atirando or self.andando:
+             if agora - self.ultima_atualizacao_anim > velocidade_anim:
+                self.ultima_atualizacao_anim = agora
+                self.frame_atual = (self.frame_atual + 1) % len(frames_atuais)
+        
+        # Pega a imagem base do frame correto
+        imagem_base = frames_atuais[self.frame_atual]
+        centro = self.rect.center
+
+        # Vira a imagem se a direção for para a esquerda
+        if self.direcao == -1:
+            self.imagem = pygame.transform.flip(imagem_base, True, False)
+        else:
+            self.imagem = imagem_base
+            
+        # Atualiza o rect com a nova imagem e restaura o centro
+        self.rect = self.imagem.get_rect()
+        self.rect.center = centro  
 
     def update(self):
+        # Verifica se a animação de tiro deve terminar
+        if self.atirando and pygame.time.get_ticks() - self.tempo_ultimo_tiro > self.duracao_animacao_tiro:
+            self.atirando = False
+            self.frame_atual = 0
+        self.andando = False
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rect.x -= self.velocidade
             self.direcao = -1 # Atualiza a direção
-            self.imagem = pygame.transform.flip(self.imagem_original, True, False) # Vira a imagem
+            self.andando = True
+
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.velocidade
-            self.direcao = 1 # Atualiza a direção
-            self.imagem = self.imagem_original # Imagem original
+            self.direcao = 1 
+            self.andando = True
+
         if keys[pygame.K_UP]:
             self.rect.y -= self.velocidade
+            self.andando = True
+
         if keys[pygame.K_DOWN]:
             self.rect.y += self.velocidade
+            self.andando = True
+        
+        self._animar()
 
     def atirar(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas):
         if self.municao > 0:
             self.municao -= 1
+            # ATIVA O ESTADO E O TIMER DE TIRO
+            self.atirando = True
+            self.tempo_ultimo_tiro = pygame.time.get_ticks()
+            self.frame_atual = 0 # Reinicia a animação de tiro
+
             return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas)
         return None
 

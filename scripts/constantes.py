@@ -19,15 +19,15 @@ VIDA_UTIL_PROJETIL = 500  # pixels
 
 # Zumbis
 VIDA_ZOMBIE = 50
-VELOCIDADE_ZOMBIE = 1
+VELOCIDADE_ZOMBIE = 2
 DANO_ZOMBIE = 10  # Dano que o zumbi causa
 QTD_ZOMBIES = 40
 
 #Zumbi Tanque
 VIDA_ZUMBI_TANQUE = 100
-VELOCIDADE_ZUMBI_TANQUE = 0.5
+VELOCIDADE_ZUMBI_TANQUE = 1 # se deixar numero decimal, buga o movimento dele
 DANO_ZUMBI_TANQUE = 25
-CHANCE_SPAWN_TANQUE = 0.2 # chance de um zumbi da horda ser tanque
+CHANCE_SPAWN_TANQUE = 0.75 # chance de um zumbi da horda ser tanque
 
 
 # Obstáculos
@@ -39,6 +39,6 @@ CADENCIA_TIRO = 250
 
 # Respawn
 INTERVALO_RESPAWN_ZOMBIE = 2500  # em ms
-ZOMBIES_POR_HORDA = 10 # Zumbis por horda
+ZOMBIES_POR_HORDA = 2 # Zumbis por horda
 INTERVALO_ENTRE_HORDAS = 6000 # Intervalo entre hordas em ms
-INTERVALO_SPAWN_ZUMBI_HORDA = 600 # intervalo entre cada zumbi da horda
+INTERVALO_SPAWN_ZUMBI_HORDA = 800 # intervalo entre cada zumbi da horda
