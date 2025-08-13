@@ -18,14 +18,14 @@ class Zombie(pygame.sprite.Sprite):
         for j in range(6):
             # Usamos os valores definidos manualmente para o recorte
             frame = self.spritesheet.subsurface((j * FRAME_LARGURA, 0, FRAME_LARGURA, FRAME_ALTURA))
-            frame_redimensionado = pygame.transform.scale(frame, (72, 72))
+            frame_redimensionado = pygame.transform.scale(frame, (100, 100))
             self.frames.append(frame_redimensionado)
 
         # Extrai os 2 frames da segunda linha
         for j in range(2):
             # A coordenada y é FRAME_ALTURA para pular para a segunda linha
             frame = self.spritesheet.subsurface((j * FRAME_LARGURA, FRAME_ALTURA, FRAME_LARGURA, FRAME_ALTURA))
-            frame_redimensionado = pygame.transform.scale(frame, (72, 72))
+            frame_redimensionado = pygame.transform.scale(frame, (100, 100))
             self.frames.append(frame_redimensionado)
             
         # O resto da lógica de animação

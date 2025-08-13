@@ -19,14 +19,14 @@ class ZombieTank(Zombie):
         for j in range(6):
             # Usamos os valores definidos manualmente para o recorte
             frame = self.spritesheet.subsurface((j * FRAME_LARGURA, 0, FRAME_LARGURA, FRAME_ALTURA))
-            frame_redimensionado = pygame.transform.scale(frame, (100, 100))
+            frame_redimensionado = pygame.transform.scale(frame, (140, 140))
             self.frames.append(frame_redimensionado)
 
         # Extrai o frame da segunda linha
         for j in range(1):
             # A coordenada y é FRAME_ALTURA para pular para a segunda linha
             frame = self.spritesheet.subsurface((j * FRAME_LARGURA, FRAME_ALTURA, FRAME_LARGURA, FRAME_ALTURA))
-            frame_redimensionado = pygame.transform.scale(frame, (100, 100))
+            frame_redimensionado = pygame.transform.scale(frame, (140, 140))
             self.frames.append(frame_redimensionado)
             
         # O resto da lógica de animação

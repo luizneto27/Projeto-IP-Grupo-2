@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         walking_spritesheet = pygame.image.load('Imagens/sprite_player.png').convert_alpha()
-        shooting_spritesheet = pygame.image.load('Imagens/player_atirando.png').convert_alpha()
+        shooting_spritesheet = pygame.image.load('Imagens/player_atirando_bg.png').convert_alpha()
 
         # Lista para guardar os frames da animação de caminhada
         self.walking_frames = []
@@ -18,19 +18,19 @@ class Player(pygame.sprite.Sprite):
         FRAME_ALTURA_CAMINHO = 72
         for j in range(5):
             frame = walking_spritesheet.subsurface((j * FRAME_LARGURA_CAMINHO, 0, FRAME_LARGURA_CAMINHO, FRAME_ALTURA_CAMINHO))
-            self.walking_frames.append(pygame.transform.scale(frame, (100, 100)))
+            self.walking_frames.append(pygame.transform.scale(frame, (120, 120)))
         frame = walking_spritesheet.subsurface((0, FRAME_ALTURA_CAMINHO, FRAME_LARGURA_CAMINHO, FRAME_ALTURA_CAMINHO))
-        self.walking_frames.append(pygame.transform.scale(frame, (100, 100)))
+        self.walking_frames.append(pygame.transform.scale(frame, (120, 120)))
 
-        FRAME_LARGURA_TIRO = 72
-        FRAME_ALTURA_TIRO = 72
+        FRAME_LARGURA_TIRO = 107
+        FRAME_ALTURA_TIRO = 70
         for i in range(3): # Linhas
             for j in range(3): # Colunas
                 # Para a extração se chegar no 8º frame 
                 if len(self.shooting_frames) >= 8:
                     break
                 frame = shooting_spritesheet.subsurface((j * FRAME_LARGURA_TIRO, i * FRAME_ALTURA_TIRO, FRAME_LARGURA_TIRO, FRAME_ALTURA_TIRO))
-                self.shooting_frames.append(pygame.transform.scale(frame, (150, 100))) # Ajusta o tamanho do frame de tiro
+                self.shooting_frames.append(pygame.transform.scale(frame, (120, 120))) # Ajusta o tamanho do frame de tiro
 
         # Atributos de controle da animação
         self.frame_atual = 0
