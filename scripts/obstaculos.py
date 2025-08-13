@@ -28,13 +28,13 @@ class Obstaculo(pygame.sprite.Sprite):
 
 class Flor(Obstaculo):
     def __init__(self, x, y):
-        super().__init__(x, y, 'Imagens/mochila.png', VIDA_FLOR, 'kitmedico')
-        self.imagem = pygame.transform.scale(self.imagem, (60, 60))
+        super().__init__(x, y, 'Imagens/maquina_kitmed.png', VIDA_FLOR, 'kitmedico')
+        self.imagem = pygame.transform.scale(self.imagem, (150, 150))
 
         # Guarda a posição central original
         old_center = self.rect.center
         
-        self.rect = pygame.Rect(0, 0, 60, 60) 
+        self.rect = pygame.Rect(0, 0, 150, 150) 
         
         # Restaura a posição central
         self.rect.center = old_center
