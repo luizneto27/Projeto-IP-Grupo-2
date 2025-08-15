@@ -6,7 +6,7 @@ ALTURA_TELA = 768
 #player
 VELOCIDADE_PLAYER = 3
 VIDA_PLAYER = 200
-MUNICAO_INICIAL_PLAYER = 50
+MUNICAO_INICIAL_PLAYER = 60
 MOEDAS_INICIAIS_PLAYER = 0
 KITMEDS_INICIAIS_PLAYER = 0
 # Cooldown
@@ -40,5 +40,5 @@ CADENCIA_TIRO = 250
 # Respawn
 INTERVALO_RESPAWN_ZOMBIE = 2500  # em ms
 ZOMBIES_POR_HORDA = 2 # Zumbis por horda
-INTERVALO_ENTRE_HORDAS = 6000 # Intervalo entre hordas em ms
-INTERVALO_SPAWN_ZUMBI_HORDA = 800 # intervalo entre cada zumbi da horda
+INTERVALO_ENTRE_HORDAS = 4000 # Intervalo entre hordas em ms
+INTERVALO_SPAWN_ZUMBI_HORDA = 600 # intervalo entre cada zumbi da horda

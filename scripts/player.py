@@ -151,7 +151,7 @@ class Player(pygame.sprite.Sprite):
         elif item.type == 'moeda':
             self.moedas += 1
         elif item.type == 'municao':
-            self.municao += 20
+            self.municao += 30
         item.kill()
 
     #Método para usar o kit médico

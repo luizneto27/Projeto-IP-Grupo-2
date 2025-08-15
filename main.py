@@ -36,7 +36,7 @@ jogo_pausado = False
 contagem_ativa = False
 tempo_inicio_contagem = 0
 som_mutado = False
-volume_musica = 1.0
+volume_musica = 0.5
 
 #mensagem - informar do pause
 MOSTRAR_MSG_INSTRUCAO = True
@@ -45,7 +45,7 @@ inicio_msg_instrucao = pygame.time.get_ticks()
 
 # Música
 try:
-    pygame.mixer.music.load("Sons/musica_fundo.mp3")
+    pygame.mixer.music.load("Sons/musica_fundo_2.mp3")
     pygame.mixer.music.set_volume(volume_musica)
     pygame.mixer.music.play(-1)
 except pygame.error as erro:
