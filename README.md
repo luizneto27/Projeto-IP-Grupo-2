@@ -51,3 +51,11 @@ O maior desafio inicial do nosso projeto foi a necessidade de estudar, de forma 
 - Moeda: Dropado quando mata zumbis
 
 # Capturas de Tela:
+
+![alt text](<Screenshot 2025-08-15 144131.png>)
+
+![alt text](<Screenshot 2025-08-15 144148.png>)
+
+![alt text](<Screenshot 2025-08-15 144344.png>)
+
+![alt text](<Screenshot 2025-08-15 144647.png>)

@@ -83,8 +83,8 @@ centro_y = ALTURA_TELA // 2
 botao_retomar = pygame.Rect(centro_x - 140, centro_y + 10, 280, 50)
 botao_sair = pygame.Rect(centro_x - 100, centro_y + 80, 200, 50)
 
-retangulo_icone_som = icone_som_ativo.get_rect(topright=(LARGURA_TELA - 20, 20))
-retangulo_icone_menu = icone_menu.get_rect(topright=(LARGURA_TELA - 80, 20))
+retangulo_icone_som = icone_som_ativo.get_rect(topright=(LARGURA_TELA - 20, 60))
+retangulo_icone_menu = icone_menu.get_rect(topright=(LARGURA_TELA - 80, 60))
 
 # Funções
 def alternar_som():
