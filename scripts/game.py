@@ -56,6 +56,13 @@ class Game:
         self.icone_municao = pygame.transform.scale(pygame.image.load('Imagens/balas.png').convert_alpha(),(60,60))
         self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/moeda.png').convert_alpha(),(60,60))
         self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/kitmed.png').convert_alpha(),(60,60))
+
+        #!carregar imagens
+        self.game_over = pygame.image.load('game_over.jpeg').convert_alpha()
+        self.game_over = pygame.transform.scale(self.game_over, (self.largura, self.altura))
+        
+        self.tela_vencedor = pygame.image.load('tela_vencedor.png').convert_alpha()
+        self.tela_vencedor = pygame.transform.scale(self.tela_vencedor, (self.largura, self.altura))
         
         #carregar som do tiro
         self.som_de_tiro_tocando = False # Variável para controlar o som
@@ -222,12 +229,76 @@ class Game:
                 # Atualiza o tempo do último hit
                 self.ultimo_hit_player = tempo_atual
 
+    def verificar_botao_tentar(self):#! detecta quando aperta no botão ou ate mesmo enter
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+                
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_RETURN:
+                    self.resetar_jogo()
+                    
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if 500 < mouse_pos[0] < 700 and 500 < mouse_pos[1] < 560: #area botão
+                    self.resetar_jogo()
+
+
+    def resetar_jogo(self): #!restaura as variaveis para começar o jogo do inicio
+        self.player = Player(self.largura // 2, self.altura // 2)
+        self.inimigos.empty()
+        self.obstaculos.empty()
+        self.coletaveis.empty()
+        self.projeteis.empty()
+        self.particulas.empty()
+        self.todos_sprites.empty()
+        self.todos_sprites.add(self.player)
+        
+        self.zumbis_spawnados = 0
+        self.zumbis_mortos = 0
+        self.tempo_inicial = pygame.time.get_ticks()
+        self.tempo_pausado_total = 0
+        self.momento_pausa = None
+        self.horda_em_andamento = False
+        self.zumbis_para_spawnar_na_horda = 0
+        self.ultimo_spawn_individual_zumbi = 0
+        self.ultimo_spawn_zombie = 0
+        self.ultimo_hit_player = 0
+        self.ultimo_tiro = 0
+        self.jogo_comecou = False
+        self.estado_jogo = 'JOGANDO'
+        self.tempo_fim_jogo = 0
+
+        if self.som_tiro:
+            self.som_tiro.stop()
+        self.som_de_tiro_tocando = False
+            
+        self.spawnar_elementos_iniciais()
+
+    def desenhar_botao_tentar(self):
+        fonte_botao = pygame.font.SysFont('Arial', 36, bold=True)
+        texto = fonte_botao.render("Tentar Novamente", True, (255, 255, 255))
+        botao_rect = pygame.Rect(500, 500, 200, 60)
+        pygame.draw.rect(tela, (0, 128, 0), botao_rect)
+        tela.blit(texto, (botao_rect.x + 10, botao_rect.y + 15))
+
+    #!!def verificar_botao_tentar(posicao_mouse):
+       # x_botao = 300
+        #y_botao = 400
+        #largura_botao = 200
+       # altura_botao = 60
+        
+      #  if x_botao <= posicao_mouse[0] <= x_botao + largura_botao and \ y_botao <= posicao_mouse[1] <= y_botao + altura_botao:
+       #     resetar_jogo()
+
+
     def update(self):
         # Se o jogo estiver em um estado final (VITORIA, DERROTA, etc.)
         if self.estado_jogo != 'JOGANDO':
             # Verificamos se já se passaram 3 segundos desde que o jogo acabou
-            if pygame.time.get_ticks() - self.tempo_fim_jogo > 3000:
-                return False  # Retorna False para encerrar o jogo
+            #if pygame.time.get_ticks() - self.tempo_fim_jogo > 3000:
+                #!!return False  # Retorna False para encerrar o jogo #tirar
             return True  # Se não, mantém o jogo rodando na tela final
         
         if self.momento_pausa is not None: # Se tá pausado, não atualiza nada
@@ -340,7 +411,7 @@ class Game:
             
             texto_cronometro = self.fonte.render(texto_tempo, True, (255,255,255))
             tela.blit(texto_cronometro, (1100, 15))
-
+analise o codigo
             # Função auxiliar para desenhar cada item da UI
             def draw_ui_item(icon, text, x, y):
                 tela.blit(icon, (x, y))
@@ -359,19 +430,14 @@ class Game:
     
         # Se o jogo acabou, desenha a tela final correspondente
         elif self.estado_jogo == 'VITORIA':
-            tela.fill((0, 0, 0))
-            texto_vitoria = self.fonte.render("Você Venceu, Parabéns!", True, (0, 255, 50))
-            texto_rect = texto_vitoria.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-            tela.blit(texto_vitoria, texto_rect)
+            tela.blit(self.tela_vencedor, (0, 0))
 
         elif self.estado_jogo == 'DERROTA':
-            tela.fill((0, 0, 0))
-            texto_derrota = self.fonte.render("Você Perdeu!", True, (255, 0, 0))
-            texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-            tela.blit(texto_derrota, texto_rect)
-
+            tela.blit(self.game_over, (0, 0))
+            self.desenhar_botao_tentar()
+            self.verificar_botao_tentar()
+        
         elif self.estado_jogo == 'TEMPO_ESGOTADO':
-            tela.fill((0, 0, 0))
-            texto_derrota = self.fonte.render("Tempo Esgotado! Você Perdeu.", True, (255, 0, 0))
-            texto_rect = texto_derrota.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-            tela.blit(texto_derrota, texto_rect)
+            tela.blit(self.game_over, (0, 0))
+            self.desenhar_botao_tentar()
+            self.verificar_botao_tentar()
