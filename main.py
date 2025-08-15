@@ -44,37 +44,37 @@ DURACAO_MSG_INSTRUCAO = 3000  # milissegundos
 inicio_msg_instrucao = pygame.time.get_ticks()
 
 # Música
-#try:
-    #pygame.mixer.music.load("jogo_music.mp3")
-    #pygame.mixer.music.set_volume(volume_musica)
-    #pygame.mixer.music.play(-1)
-#except pygame.error as erro:
-    #print("Erro ao carregar música:", erro)
+try:
+    pygame.mixer.music.load("Sons/musica_fundo.mp3")
+    pygame.mixer.music.set_volume(volume_musica)
+    pygame.mixer.music.play(-1)
+except pygame.error as erro:
+    print("Erro ao carregar música:", erro)
 
 # Ícones
-#tamanho_icone = 50
-#try:
-    #icone_som_ativo = pygame.image.load("icon_music.png")
-    #icone_som_mutado = pygame.image.load("icon_music_off.png")
-    #icone_menu = pygame.image.load("icon_menu.png")
-    #icone_som_ativo = pygame.transform.scale(icone_som_ativo, (tamanho_icone, tamanho_icone))
-    #icone_som_mutado = pygame.transform.scale(icone_som_mutado, (tamanho_icone, tamanho_icone))
-    #icone_menu = pygame.transform.scale(icone_menu, (tamanho_icone, tamanho_icone))
-#except pygame.error:
-    #icone_som_ativo = pygame.Surface((tamanho_icone, tamanho_icone)); icone_som_ativo.fill(VERDE)
-    #icone_som_mutado = pygame.Surface((tamanho_icone, tamanho_icone)); icone_som_mutado.fill(VERMELHO)
-    #icone_menu = pygame.Surface((tamanho_icone, tamanho_icone)); icone_menu.fill(BRANCO)
+tamanho_icone = 50
+try:
+    icone_som_ativo = pygame.image.load("Imagens/som_on.png")
+    icone_som_mutado = pygame.image.load("Imagens/som_off.png")
+    icone_menu = pygame.image.load("Imagens/menu.png")
+    icone_som_ativo = pygame.transform.scale(icone_som_ativo, (tamanho_icone, tamanho_icone))
+    icone_som_mutado = pygame.transform.scale(icone_som_mutado, (tamanho_icone, tamanho_icone))
+    icone_menu = pygame.transform.scale(icone_menu, (tamanho_icone, tamanho_icone))
+except pygame.error:
+    icone_som_ativo = pygame.Surface((tamanho_icone, tamanho_icone)); icone_som_ativo.fill(VERDE)
+    icone_som_mutado = pygame.Surface((tamanho_icone, tamanho_icone)); icone_som_mutado.fill(VERMELHO)
+    icone_menu = pygame.Surface((tamanho_icone, tamanho_icone)); icone_menu.fill(BRANCO)
 
 # Imagem de pausa
-#try:
-    #imagem_pausa = pygame.image.load("tela_pause.png").convert_alpha()
-    #largura_img = 400
-    #altura_img = int(imagem_pausa.get_height() * (largura_img / imagem_pausa.get_width()))
-    #imagem_pausa = pygame.transform.scale(imagem_pausa, (largura_img, altura_img))
-#except pygame.error as erro:
-    #print("Erro ao carregar tela de pausa:", erro)
-    #imagem_pausa = pygame.Surface((500, 450), pygame.SRCALPHA)
-    #imagem_pausa.fill((10, 10, 30, 185))
+try:
+    imagem_pausa = pygame.image.load("Imagens/tela_pause.png").convert_alpha()
+    largura_img = 400
+    altura_img = int(imagem_pausa.get_height() * (largura_img / imagem_pausa.get_width()))
+    imagem_pausa = pygame.transform.scale(imagem_pausa, (largura_img, altura_img))
+except pygame.error as erro:
+    print("Erro ao carregar tela de pausa:", erro)
+    imagem_pausa = pygame.Surface((500, 450), pygame.SRCALPHA)
+    imagem_pausa.fill((10, 10, 30, 185))
 
 # Botões
 centro_x = LARGURA_TELA // 2
@@ -82,8 +82,8 @@ centro_y = ALTURA_TELA // 2
 botao_retomar = pygame.Rect(centro_x - 140, centro_y + 10, 280, 50)
 botao_sair = pygame.Rect(centro_x - 100, centro_y + 80, 200, 50)
 
-#retangulo_icone_som = icone_som_ativo.get_rect(topright=(LARGURA_TELA - 20, 20))
-#retangulo_icone_menu = icone_menu.get_rect(topright=(LARGURA_TELA - 80, 20))
+retangulo_icone_som = icone_som_ativo.get_rect(topright=(LARGURA_TELA - 20, 20))
+retangulo_icone_menu = icone_menu.get_rect(topright=(LARGURA_TELA - 80, 20))
 
 # Funções
 def alternar_som():
@@ -98,10 +98,10 @@ def voltar_para_menu():
     mostrar_capa = True
     game = Game(LARGURA_TELA, ALTURA_TELA)
 
-#def desenhar_painel_pausa():
-    #tela.blit(imagem_pausa, imagem_pausa.get_rect(center=(LARGURA_TELA / 2, ALTURA_TELA / 2)))
-    #tela.blit(icone_som_mutado if som_mutado else icone_som_ativo, retangulo_icone_som)
-    #tela.blit(icone_menu, retangulo_icone_menu)
+def desenhar_painel_pausa():
+    tela.blit(imagem_pausa, imagem_pausa.get_rect(center=(LARGURA_TELA / 2, ALTURA_TELA / 2)))
+    tela.blit(icone_som_mutado if som_mutado else icone_som_ativo, retangulo_icone_som)
+    tela.blit(icone_menu, retangulo_icone_menu)
 
 def desenhar_contagem_regressiva():
     global contagem_ativa, jogo_pausado
@@ -157,10 +157,10 @@ while jogo_rodando:
                     tempo_inicio_contagem = pygame.time.get_ticks()
                 elif botao_sair.collidepoint(pos_mouse):
                     jogo_rodando = False
-                #elif retangulo_icone_som.collidepoint(pos_mouse):
-                    #alternar_som()
-                #elif retangulo_icone_menu.collidepoint(pos_mouse):
-                    #voltar_para_menu()
+                elif retangulo_icone_som.collidepoint(pos_mouse):
+                    alternar_som()
+                elif retangulo_icone_menu.collidepoint(pos_mouse):
+                    voltar_para_menu()
 
     # Desenho
     if mostrar_capa:

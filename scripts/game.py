@@ -159,7 +159,7 @@ class Game:
             tempo_atual = pygame.time.get_ticks()
             if tempo_atual - self.ultimo_tiro > CADENCIA_TIRO:
                 self.ultimo_tiro = tempo_atual
-                projetil = self.player.atirar(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites, self.particulas)
+                projetil = self.player.atirar(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites, self.particulas, self)
                 if projetil:
                     self.projeteis.add(projetil)
                     self.todos_sprites.add(projetil)

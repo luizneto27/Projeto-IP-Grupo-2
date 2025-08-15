@@ -134,7 +134,7 @@ class Player(pygame.sprite.Sprite):
         
         self._animar()
 
-    def atirar(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas):
+    def atirar(self,grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas, game):
         if self.municao > 0:
             self.municao -= 1
             # ATIVA O ESTADO E O TIMER DE TIRO
@@ -142,7 +142,7 @@ class Player(pygame.sprite.Sprite):
             self.tempo_ultimo_tiro = pygame.time.get_ticks()
             self.frame_atual = 0 # Reinicia a animação de tiro
 
-            return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas)
+            return Projetil(self.rect.centerx, self.rect.centery, self.direcao, grupos_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas, game)
         return None
 
     def coletar(self, item):

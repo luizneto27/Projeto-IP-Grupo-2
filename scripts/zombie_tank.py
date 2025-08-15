@@ -7,7 +7,7 @@ class ZombieTank(Zombie):
     def __init__(self, x, y):
         # Chama o __init__ da classe pai (Zombie) para aproveitar o código
         super().__init__(x, y)
-        self.spritesheet = pygame.image.load('Imagens/zombie_tank.png').convert_alpha()
+        self.spritesheet = pygame.image.load('Imagens/zumbi_tank.png').convert_alpha()
         
         self.frames = []
         
