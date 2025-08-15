@@ -57,6 +57,13 @@ class Game:
         self.icone_moeda = pygame.transform.scale(pygame.image.load('Imagens/moeda.png').convert_alpha(),(60,60))
         self.icone_medkit = pygame.transform.scale(pygame.image.load('Imagens/kitmed.png').convert_alpha(),(60,60))
         
+        #carregar som do tiro
+        self.som_de_tiro_tocando = False # Variável para controlar o som
+        self.cadencia_tiro = CADENCIA_TIRO
+
+        self.som_tiro = pygame.mixer.Sound("Sons/Metralhadora_1.mp3")
+        self.som_tiro.set_volume(0.5) # Ajuste o volume se necessário (0.0 a 1.0)
+
         self.spawnar_elementos_iniciais()
         self.ultimo_tiro = 0 # Controle para cadência de tiro
         # Guarda o tempo do último hit no jogador para o cooldown
@@ -75,12 +82,14 @@ class Game:
 
         self.cooldown_kitmed = 0
 
-        # ADICIONADO: método para iniciar pausa (registra o início da pausa)
+    # o método para iniciar pausa (registra o início da pausa)
     def pausar(self):
-        if self.momento_pausa is None:
-            self.momento_pausa = pygame.time.get_ticks()
+        self.momento_pausa = pygame.time.get_ticks()
+        if self.som_de_tiro_tocando and self.som_tiro:
+            self.som_tiro.stop()
+            self.som_de_tiro_tocando = False
 
-    # ADICIONADO: método para terminar pausa (acumula o tempo que ficou pausado)
+    #o método para terminar pausa (acumula o tempo que ficou pausado)
     def retomar(self):
         if self.momento_pausa is not None:
             self.tempo_pausado_total += pygame.time.get_ticks() - self.momento_pausa
@@ -153,17 +162,29 @@ class Game:
                 self.spawn_zombie()
 
     def gerenciar_tiros(self):
-        #lógica de tiro
         keys = pygame.key.get_pressed()
+        agora = pygame.time.get_ticks()
+
+        # Verifica se a tecla de espaço está pressionada
         if keys[pygame.K_SPACE]:
-            tempo_atual = pygame.time.get_ticks()
-            if tempo_atual - self.ultimo_tiro > CADENCIA_TIRO:
-                self.ultimo_tiro = tempo_atual
+            # Se a tecla está pressionada mas o som não está tocando, inicie o som em loop
+            if not self.som_de_tiro_tocando and self.som_tiro:
+                self.som_tiro.play(loops=-1)
+                self.som_de_tiro_tocando = True
+
+            # Lógica para criar o projétil com base na cadência de tiro
+            if agora - self.ultimo_tiro > self.cadencia_tiro:
+                self.ultimo_tiro = agora
                 projetil = self.player.atirar(self.inimigos, self.obstaculos, self.coletaveis, self.todos_sprites, self.particulas, self)
                 if projetil:
-                    self.projeteis.add(projetil)
                     self.todos_sprites.add(projetil)
-    
+                    self.projeteis.add(projetil)
+        else:
+            # Se a tecla de espaço NÃO está pressionada e o som estava tocando, pare o som
+            if self.som_de_tiro_tocando and self.som_tiro:
+                self.som_tiro.stop()
+                self.som_de_tiro_tocando = False
+                      
     def gerenciar_uso_kit_medico(self):
         tempo_atual = pygame.time.get_ticks()
         keys = pygame.key.get_pressed()

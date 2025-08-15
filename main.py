@@ -172,7 +172,7 @@ while jogo_rodando:
         sobreposicao = pygame.Surface(tela.get_size(), pygame.SRCALPHA)
         sobreposicao.fill((0, 0, 0, 80))  # sombra leve
         tela.blit(sobreposicao, (0, 0))
-        #desenhar_painel_pausa()
+        desenhar_painel_pausa()
     else:
         if not game.update():
             jogo_rodando = False
