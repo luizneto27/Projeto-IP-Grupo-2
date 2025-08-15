@@ -24,7 +24,7 @@ class Game:
         self.altura_mundo = altura
 
         #imagem de fundo
-        self.imagem_fundo = pygame.image.load('Imagens/bg_3.jpg').convert()
+        self.imagem_fundo = pygame.image.load('Imagens/fundo_final_3.png').convert()
         self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (self.largura_mundo, altura))
 
         #Grupo de Sprites
