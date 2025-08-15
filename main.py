@@ -11,8 +11,9 @@ capa_img = pygame.image.load("Imagens/capa_definitiva.png").convert()
 capa_img = pygame.transform.scale(capa_img, (LARGURA_TELA, ALTURA_TELA))
 
 # Botões da capa (ajustar coordenadas conforme imagem)
-botao_iniciar_capa = pygame.Rect(460, 500, 240, 50)
-botao_sair_capa = pygame.Rect(500, 570, 160, 50)
+botao_iniciar_capa = pygame.Rect(370, 535, 480, 70)
+botao_sair_capa = pygame.Rect(435, 630, 365, 65)
+
 
 # Estado inicial
 mostrar_capa = True
