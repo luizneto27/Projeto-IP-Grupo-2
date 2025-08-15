@@ -47,7 +47,7 @@ O maior desafio inicial do nosso projeto foi a necessidade de estudar, de forma 
 
 # Coletáveis:
 - Kit Médico: Dropado quando atira na Máquina de Kit Médico, **Recupera +25 da vida**
-- Munição: Dropado quando atinge a mochila, **Aumenta +20 tiros**
+- Munição: Dropado quando atinge a maquina, **Aumenta +30 tiros**
 - Moeda: Dropado quando mata zumbis
 
 # Capturas de Tela:
