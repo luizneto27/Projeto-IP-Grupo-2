@@ -6,6 +6,17 @@ from scripts.constantes import LARGURA_TELA, ALTURA_TELA
 pygame.init()
 pygame.mixer.init()
 
+# Capa
+capa_img = pygame.image.load("capa_definitiva.png").convert()
+capa_img = pygame.transform.scale(capa_img, (LARGURA_TELA, ALTURA_TELA))
+
+# Botões da capa (ajustar coordenadas conforme imagem)
+botao_iniciar_capa = pygame.Rect(460, 500, 240, 50)
+botao_sair_capa = pygame.Rect(500, 570, 160, 50)
+
+# Estado inicial
+mostrar_capa = True
+
 # Configurações
 clock = pygame.time.Clock()
 game = Game(LARGURA_TELA, ALTURA_TELA)
@@ -81,9 +92,11 @@ def alternar_som():
     pygame.mixer.music.set_volume(0 if som_mutado else volume_musica)
 
 def voltar_para_menu():
-    print("Voltando para o menu principal...")
-    global jogo_rodando
-    jogo_rodando = False
+    global jogo_pausado, contagem_ativa, mostrar_capa, game
+    jogo_pausado = False
+    contagem_ativa = False
+    mostrar_capa = True
+    game = Game(LARGURA_TELA, ALTURA_TELA)
 
 def desenhar_painel_pausa():
     tela.blit(imagem_pausa, imagem_pausa.get_rect(center=(LARGURA_TELA / 2, ALTURA_TELA / 2)))
@@ -107,6 +120,9 @@ def desenhar_contagem_regressiva():
         jogo_pausado = False
         game.retomar()  #qnd terminar a contagem, retoma o cronômetro (acumula tempo de pausa)
 
+def tela_capa():
+    tela.blit(capa_img, (0, 0))
+    pygame.display.flip()
 
 # Loop principal
 while jogo_rodando:
@@ -115,6 +131,13 @@ while jogo_rodando:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             jogo_rodando = False
+        elif mostrar_capa:
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                if botao_iniciar_capa.collidepoint(evento.pos):
+                    mostrar_capa = False  # inicia o jogo
+                elif botao_sair_capa.collidepoint(evento.pos):
+                    jogo_rodando = False
+            continue
         elif evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_ESCAPE:
                 if not contagem_ativa:
@@ -140,7 +163,9 @@ while jogo_rodando:
                     voltar_para_menu()
 
     # Desenho
-    if contagem_ativa:
+    if mostrar_capa:
+        tela_capa()
+    elif contagem_ativa:
         desenhar_contagem_regressiva()
     elif jogo_pausado:
         game.draw(tela)  # mantém o jogo congelado no fundo
