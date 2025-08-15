@@ -1,11 +1,12 @@
 #projeteis.py
 import pygame
 import random
-from scripts.constantes import VELOCIDADE_PROJETIL, DANO_PROJETIL
+from scripts.constantes import VELOCIDADE_PROJETIL, DANO_PROJETIL, ALTURA_TELA, LARGURA_TELA
 
 class Projetil(pygame.sprite.Sprite):
-    def __init__(self, x, y, direcao, grupo_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas):
+    def __init__(self, x, y, direcao, grupo_inimigos, grupo_obstaculos, grupo_coletaveis, grupo_todos_sprites, grupo_particulas, game):
         super().__init__()
+        self.game = game  # Guarda referência ao jogo para acessar a câmera
         self.imagem = pygame.Surface((20, 8), pygame.SRCALPHA) # Aparência da bala
         # Desenha uma elipse amarela para um efeito mais orgânico e visualmente atraente
         pygame.draw.ellipse(self.imagem, (255, 220, 0), self.imagem.get_rect())
@@ -27,31 +28,32 @@ class Projetil(pygame.sprite.Sprite):
         # O projétil se move apenas na horizontal e na direção do jogador
         self.rect.x += self.velocidade * self.direcao
 
-        # Remove o projétil se ele sair da tela 
-        if self.rect.left > 4000 or self.rect.right < 0:
-            self.kill()
+        # Retângulo da área visível da tela
+        camera_rect = self.game.camera
 
-        # Colisão com inimigos
-        # Usamos spritecollide com True para matar o projétil e False para não matar o inimigo
-        inimigos_colididos = pygame.sprite.spritecollide(self, self.grupo_inimigos, False)
-        if inimigos_colididos:
-            for inimigo in inimigos_colididos:
+        # --- Colisão com inimigos visíveis ---
+        for inimigo in self.grupo_inimigos:
+            if camera_rect.colliderect(inimigo.rect) and self.rect.colliderect(inimigo.rect):
                 inimigo.sofrer_dano(DANO_PROJETIL)
                 self.criar_efeito_impacto()
-            self.kill() # Destrói o projétil
-            return
+                self.kill()
+                return
 
-        # Colisão com obstáculos
-        for obstaculo in pygame.sprite.spritecollide(self, self.grupo_obstaculos, False):
-            if obstaculo.sofrer_dano(DANO_PROJETIL):
-                item = obstaculo.dropar_item()
-                if item:
-                    # Adiciona o item ao grupo de coletáveis e a todos os sprites
-                    self.grupo_coletaveis.add(item)
-                    self.grupo_todos_sprites.add(item)
-            self.criar_efeito_impacto()
+        # --- Colisão com obstáculos visíveis ---
+        for obstaculo in self.grupo_obstaculos:
+            if camera_rect.colliderect(obstaculo.rect) and self.rect.colliderect(obstaculo.rect):
+                if obstaculo.sofrer_dano(DANO_PROJETIL):
+                    item = obstaculo.dropar_item()
+                    if item:
+                        self.grupo_coletaveis.add(item)
+                        self.grupo_todos_sprites.add(item)
+                self.criar_efeito_impacto()
+                self.kill()
+                return
+
+        # Remove o projétil se ele sair da área visível
+        if not camera_rect.colliderect(self.rect):
             self.kill()
-            return
         
     def criar_efeito_impacto(self):
         # cria particulas de bala no objeto atingido

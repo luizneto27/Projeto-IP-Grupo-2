@@ -44,6 +44,9 @@ class Game:
         self.tempo_inicial = pygame.time.get_ticks()
         self.fonte = pygame.font.Font(None, 74)
 
+        self.tempo_pausado_total = 0  # ADICIONADO: acumula tempo total em que o jogo ficou pausado
+        self.momento_pausa = None      # ADICIONADO: registra quando a pausa começou (ms)
+
         self.zumbis_spawnados = 0 # contador de zumbis
         self.zumbis_mortos = 0 
 
@@ -69,6 +72,19 @@ class Game:
         # Controle de estado e timer de fim de jogo
         self.estado_jogo = 'JOGANDO'  # Estados possíveis: JOGANDO, VITORIA, DERROTA, TEMPO_ESGOTADO
         self.tempo_fim_jogo = 0
+
+        self.cooldown_kitmed = 0
+
+        # ADICIONADO: método para iniciar pausa (registra o início da pausa)
+    def pausar(self):
+        if self.momento_pausa is None:
+            self.momento_pausa = pygame.time.get_ticks()
+
+    # ADICIONADO: método para terminar pausa (acumula o tempo que ficou pausado)
+    def retomar(self):
+        if self.momento_pausa is not None:
+            self.tempo_pausado_total += pygame.time.get_ticks() - self.momento_pausa
+            self.momento_pausa = None
 
     def draw_barra_vida(self, superficie, x, y, porcentagem, largura_barra, altura_barra):
         if porcentagem < 0:
@@ -149,9 +165,13 @@ class Game:
                     self.todos_sprites.add(projetil)
     
     def gerenciar_uso_kit_medico(self):
+        tempo_atual = pygame.time.get_ticks()
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_e]:
+
+        # Só permite usar um kit a cada 300 ms
+        if keys[pygame.K_e] and tempo_atual - self.cooldown_kitmed > 300:
             self.player.usar_kitmed()
+            self.cooldown_kitmed = tempo_atual
 
     def gerenciar_coleta_itens(self):
         itens_coletados = pygame.sprite.spritecollide(self.player, self.coletaveis, True)
@@ -188,6 +208,9 @@ class Game:
             if pygame.time.get_ticks() - self.tempo_fim_jogo > 3000:
                 return False  # Retorna False para encerrar o jogo
             return True  # Se não, mantém o jogo rodando na tela final
+        
+        if self.momento_pausa is not None: # Se tá pausado, não atualiza nada
+            return True
 
         # --- LÓGICA DE JOGO ATIVO (só executa se self.estado_jogo == 'JOGANDO') ---
         tempo_atual = pygame.time.get_ticks()
@@ -197,7 +220,7 @@ class Game:
             self.jogo_comecou = True
 
         # 1. VERIFICA CONDIÇÕES DE FIM DE JOGO E MUDA O ESTADO
-        if self.zumbis_spawnados >= QTD_ZOMBIES and self.zumbis_mortos == QTD_ZOMBIES:
+        if self.zumbis_spawnados == QTD_ZOMBIES and self.zumbis_mortos == QTD_ZOMBIES:
             self.estado_jogo = 'VITORIA'
             self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
 
@@ -206,11 +229,12 @@ class Game:
             self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
         
         else:
-            tempo_passado = (tempo_atual - self.tempo_inicial) / 1000
+            # MODIFICADO: desconta o tempo que o jogo ficou pausado
+            tempo_passado = (tempo_atual - self.tempo_inicial - self.tempo_pausado_total) / 1000
             tempo_restante = self.tempo_limite - tempo_passado
             if tempo_restante <= 0:
                 self.estado_jogo = 'TEMPO_ESGOTADO'
-                self.tempo_fim_jogo = pygame.time.get_ticks() # Inicia o timer de 3 segundos
+                self.tempo_fim_jogo = pygame.time.get_ticks()
         
         # 2. ATUALIZA TODOS OS ELEMENTOS DO JOGO
         self.player.update(self.largura_mundo)
@@ -275,9 +299,13 @@ class Game:
                 # Desenha um retângulo vermelho ao redor de cada sprite
                 #pygame.draw.rect(tela, (255, 0, 0), sprite.rect.move(-self.camera.x, -self.camera.y), 2)
 
-            # Lógica do cronômetro
+           # Lógica do cronômetro
             tempo_atual = pygame.time.get_ticks()
-            tempo_passado = (tempo_atual - self.tempo_inicial) / 1000  # Converte para segundos
+            #!se o jogo está pausado, usamos o instante em que a pausa começou para congelar o cronômetro na tela
+            if self.momento_pausa is not None:
+                tempo_atual = self.momento_pausa
+            #!desconta o tempo pausado do cálculo do tempo passado
+            tempo_passado = (tempo_atual - self.tempo_inicial - self.tempo_pausado_total) / 1000
             tempo_restante = self.tempo_limite - tempo_passado
 
             # Garante que o cronômetro não fique negativo na tela
