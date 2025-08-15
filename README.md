@@ -2,7 +2,7 @@
 
 Bem Vindo ao nosso jogo!
 O **CIn Defender** é um jogo de ação na qual você controla um personagem num apocalipse zumbi!
-Seu objetivo é derrotar todos em menos de 2 minutos, para isso, você coleta e utiliza os obstáculos spawnados no cenário, como a Máquina de Kit Médico (dropa Kit Médico) e a Mochila (dropa munição).
+Seu objetivo é derrotar todos em menos de 2 minutos, para isso, você coleta e utiliza os obstáculos spawnados no cenário, como a Máquina de Kit Médico (dropa Kit Médico) e o Container (dropa munição).
 
 # Organização do Código:
 
